@@ -1,0 +1,48 @@
+Game Doc explains territories too, but as they are complicated enough to be their own minigame, they are explained in detail here
+
+
+
+
+Gangs
+    When the game starts, some gangs are generated
+    When new blocks are generated, each of the gangs are inserted into the Block
+
+
+Gang Object
+    Contains a list of CrewMembers or Criminals
+    Power level of a gang is measured by taking the sum of every members power level
+    
+    Gangs have a turn_timer which decrements every turn
+        When the turn_timer reaches 0, a new Criminal is spawned
+            This does not apply to player owned gangs
+
+
+Gang Wars
+    Every turn, gangs engage in a simplified form of fighting
+        Every Gang fights with every other Gang
+        Every member of the target gang recieves damage
+            damage = power level of gang divided by number of target gang members
+    
+    At the end of every turn, the Blocks control is determined by the gang with the most members
+        The gang that is in control gets the following bonuses
+            10 health for each member
+            $25
+        
+        All other gangs recieve 25 health to keep the fighting going
+
+        All Gangs will also use their coffers in a simple procedure to purchase armor
+
+
+
+
+World contains a finite amount of Cities
+
+New Cities can be purchased
+    next_city cost = (to be determined)
+
+
+Cities contain a set-random amount of Blocks
+
+
+Blocks contain a list of Gangs
+    Each Gang is represented in each block with their own Gang object

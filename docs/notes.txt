@@ -1,0 +1,22 @@
+Adding Menu option
+    CrimeGame object has a menu_manager where all menus are registered
+    menu_home in menus.home.py is where the main menu is defined
+    Menus branching from the main menu should get their own files
+        Example: menus.crime.py
+
+
+
+
+
+TODO
+
+Scrapyard business might be able to reuse the carshop with different sell rate
+
+Item stolen log for house robberies?
+
+
+Ways to lower Heat
+    Hacking minigames
+    Hire lawyers
+    Community Service
+    Divert heat to enemy gang?

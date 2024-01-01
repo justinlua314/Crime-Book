@@ -1,0 +1,59 @@
+Option
+    str Description
+    str Menu_ID
+    char Select
+        char user must type in to trigger Option
+    func Trigger
+        By default, returns self.menu_id
+    
+    func __repr__
+        (self.select) self.description
+
+
+
+Menu
+    str Header
+    str choice_prompt
+    list Options
+        Last Option is always "(Z) Go Back"
+    func Valid_Selection
+        Takes list of valid selections
+        Requests user input until valid selection is made
+
+    func Prompt
+        Loops through self.options
+            print Option using repr
+            Store char in a valid list
+        
+        call self.valid_selection(valid_chars)
+
+
+
+MenuManager
+    str Main_Menu (ID)
+    dict Menu_ID : Menu
+    list str Menu_History
+    func Prompt
+        Prompts currently active menu
+        if return is str, activate the active menu
+        if return is None, clear Menu_History and activate Main Menu
+
+
+
+
+
+
+
+
+
+
+
+Accuracy/Dodging
+    accuracy = 4     1111
+    dodging = 6     111111
+
+    [xxxxoooooo]
+        ^
+
+
+

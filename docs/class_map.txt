@@ -1,0 +1,48 @@
+Way Outdated
+
+CrimeGame game
+    World world
+        WeaponDatabase weapons (objects.weapons.py)
+            dict weapons {str weapon_name : Weapon weapon}
+                str id
+                str name
+                bool ranged
+                int power
+                int durability
+                int price
+    
+        Player player
+            dict crew {str member_id : CrewMember member}
+            dict weapons {str weapon_id : int count}
+            int money
+            int vests
+        
+        Warehouse warehouse
+            dict items {str item_id : dict {int item_quality : Item item}}
+                str id
+                str name
+                int value
+                int quality
+                int count
+                get_value = int(value * (max(value - 2, 1) * 0.25 * (value + 1)))
+
+            dict crew {str member_id : CrewMember member}
+
+            dict qualities {int quality : str quality_name}
+        
+        dict cities {city_name : City city}
+
+    MenuManager menu_manager
+        str main_menu
+        str active_menu
+
+        dict menus {str menu_id : Menu menu}
+            str header
+            str choice_prompt
+            list [Option option]
+                str description
+                str menu_id         * active_menu set to this when Option is selected
+                char select
+                func trigger
+
+        list menu_history [str menu_id]

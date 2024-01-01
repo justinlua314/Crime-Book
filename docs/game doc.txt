@@ -1,0 +1,211 @@
+This game idea still lacks a few things
+    There may not be enough money sinks / Money might not feel valuable
+    Currently Player has full control and is never acted on.
+        Random challenges to displace the Players progress can add more complexity
+    
+    Strategy for Saving and Loading progress still neds to be made
+
+
+
+Weapons
+    name str
+    ranged bool determined if weapon is ranged or not
+    power int determines weapon damage in indirect way
+        damage = power * (user_skill * 0.5)
+    durability int
+        When durability hits 0, the weapon is removed from Human
+        Managed through use method, returns broken bool
+
+
+
+Humans
+    All pedestrians, Criminals, and Police derive from base Human class
+    Humans can hold weapons and fight
+        During a fight both humans power level is measured
+            floor(weapon.power * (relevant_stat * 0.5))
+        Then hit rolls are performed based on Humans shooting/strength stat against the targets dodging stat
+            These hit rolls are performed until someone dies
+    
+    level_up_cost(n):
+        8 + (8 * ((level_up_cost(n-1) - level_up_cost(n-2)) / 2))
+            n - 1 or 2 should have a min value of 0
+
+
+
+Player has Crew of Criminals
+    When amount of Criminals hits 0, the player loses and the game is over
+    Player has money that they can use to buy armor and weapons for the crew
+    Player has a Warehouse to store armor, weapons, and items to sell
+
+
+World holds components together
+    Player who inhabits the World
+    Cities list which starts with one City and expands
+        City object have a list of Blocks that starts with one Block and expands a finite number of times
+            Blocks are areas to control. Neither player nor any crew member have any position in the World. They are omnipresent
+            See below for more details about Blocks
+
+    Bank which handles Bank logic
+        Savings account
+            Deposit any amount whenever
+            Can only Withdraw x amount every n number of turns
+            Savings per turn averaged out every 30 turns and added to Savings as dividend
+        
+        Take Loan
+            Loan has a cap depending on Players credit score
+            Loan has interest every 10 turns
+            If Loan reaches a certain percentage of its original value above 100%, bank seizes players assets starting with money and working through Warehouse
+                Items sold to Bank under this circumstance sold at horribly cheap rate
+    
+    list of Properties owned by Player
+        Properties perform tasks regularly, but cost money to keep
+    
+    Global Stats object to keep track of interesting stats during gameplay
+        Actually handle this in CrimeGame Class
+
+
+Warehouse
+    Everything that the Player owns that isn't vests or weapons are stored here
+    Warehouse has items dict which stores dictionaries of items
+        sub dictionaries allow us to seperate items by item quality
+    
+    When selling items, player enters what minimum quality they want to sell
+        If not quality is enetered, sell all items
+
+    Item Qualities              Multiplier
+        0 : Busted              0.25
+        1 : Very Rough          0.5
+        2 : Worn                0.75
+        3 : Decent              1
+        4 : Fancy               2.5
+        5 : Luxery              4.5
+        6 : Extremely Rare      7
+        7 : Legendary           10
+        8 : One of a kind       13.5
+    
+    Item value multiplier = max(quality - 2, 1) * 0.25 * (quality + 1)
+
+
+City
+    Contains list of Blocks
+
+
+Blocks
+    Blocks have a list containing Gangs
+        Gangs contain a list of Criminals
+        Gangs go at war with each other every turn
+        The Gang with the highest power level controls the Block
+            Power Level = sum(health + armor + weapon)
+            All Criminals in the Gang that controls the block are healed for 10 health every turn
+    
+    Player can take over new Blocks by picking a turf strategy
+        See Activities below for list of strategies
+
+
+Crew Criminals
+    Have health, armor, and weapons
+    Weapons and armor automatically distributed in efficient manner
+    Used to commit crimes
+
+
+
+Menus
+    User starts at the main menu and always returns to the main menu
+    When User returns to main, that is 1 turn
+        Menus ask for user input, then either send the user to another Menu, or executes a script
+
+
+Activities
+    1. Crime
+        Petty Crime (1 person job)
+            Rob Pedestrian
+            Steal random car
+            House break-in
+        
+        Heist (Minimum Criminals > 1)
+            Rob Liquor Store    2
+            Rob Grocery Store   5
+            Rob Gun Store       5
+            Bank Heist          10
+            Casino Heist        25
+            Block Takeover      50
+
+        Hussle (Assign Criminals, has cost to start)
+            Crime Syndicate Fundraiser: $50
+            Weed Operation: $500
+            Yayo Operation: $2000
+            Kidnap Official: $5000
+
+
+    2. Manage Territory
+        Control Territories
+            Send n number of Criminals to...
+                Target: A specific Block
+                Takeover: Random Blocks in a specific City
+                Scatter: Random Blocks in random Cities
+        
+        Manage Money Coffer
+            Money stored in Coffer is used by crew members stationed on Blocks
+                Deposit Money
+                Withdraw Money
+    
+    3. Shopping
+        Buy Gear
+            Buy Armor
+            Buy Weapons
+        
+        Government Trade
+            Make Shady Donation (Increases heat cap)
+
+        Visit Bank
+            Deposit Money
+            Withdraw Money
+            Take Loan
+        
+        Casino
+            Blackjack
+            Slots
+            Double or Nothing
+            Bingo
+        
+        Real Estate (Costs money to start and maintain)
+            Recruitment office
+            Grow Farm
+            Yayo Factory
+            Scrap Yard
+                Quickly scraps cars for cash at a bad rate
+                Worst quality cars first
+
+            Car Showroom
+                Slowly sells cars at good rate
+                Best quality cars first
+
+            New City
+                No Maintanence Cost, high upfront Cost
+                Allows for infinite expansion
+    
+    4. Visit Warehouse
+        Inspect Warehouse Inventory
+        Inspect Gear
+        Distribute Armor
+        Distribute Weapons
+        Sell Items
+    
+    5. Inspect crew members
+        Figure out best way to display stats about crew members
+
+        Summary
+            Demo behavior, group criminals by their weapons and display average stats
+
+
+    6. Recruit new Members
+        Send n number of Criminals out with recruitment strategy...
+            Approach Pedestrians
+            Intimidation
+            Bribing (Requires investment * n money)
+
+
+
+
+All scripts should be made with batching in mind
+    You should be able to send 1000 Criminals to any task or job without spamming the console
