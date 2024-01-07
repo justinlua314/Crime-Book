@@ -1,0 +1,22 @@
+Version 0.1
+Small tweaks to most things
+
+Added Bank
+
+Added new Casino games
+    Bingo
+    Double or Nothing
+
+Cleaned up old wh menu code
+Heavily buffed House robbery
+Increased punishment for getting busted
+
+Fixed Territories Minigame
+    Gangs spend money more responsibly
+    Money needed by your gang calculated correctly
+    Player earns bonus $150 per block per turn
+
+Added ability to run macro multiple times
+    c : [enter] : p : [enter] : r : [enter]     Rob Pedestrian Once
+    c : p : r : [enter]                         Rob Pedestrian Once
+    c : p : r : [space] : 9 : [enter]           Rob Pedestrians 9 times

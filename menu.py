@@ -91,12 +91,35 @@ class Menu:
             ply = world.player
 
             self.print_options()
-            print("\nCrew Members:", len(ply.crew))
+
+            pop = world.crew_population()
+
+            if pop > 0:
+                print("\nCrew Members: ", len(ply.crew), " (", pop, ')', sep='')
+            else:
+                print("\nCrew Members:", len(ply.crew))
+            
             print("Heat from Police:", ply.heat, '/', ply.heat_cap)
+
+            if world.lawyers.count > 0:
+                cost = world.lawyers.count * world.lawyers.cost
+                print("Lawyers: ", world.lawyers.count, " ($", cost, ')', sep='')
+
             print('$', world.player.money, sep='')
+
+            if world.bank.loan > 0: print("Loan: $", world.bank.loan, sep='')
 
             choice = input("\n\n" + self.choice_prompt + ": ")
             system("cls")
+
+            if ' ' in choice:
+                tokens = choice.split(' ')
+
+                if tokens[0] in shortcuts:
+                    if tokens[1].isnumeric:
+                        for _ in range(int(tokens[1]) - 1): shortcuts[tokens[0]](world)
+
+                    return shortcuts[tokens[0]](world)
 
             if choice in shortcuts: return shortcuts[choice](world)
 

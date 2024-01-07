@@ -63,7 +63,9 @@ class Block:
         
         top_gang = self.controlling_gang()
         top_gang.heal_crew(10)
-        top_gang.money += 25
+
+        if top_gang.ai: top_gang.money += 25
+        else: top_gang.money += 150  # Player earns $150 per block per turn
 
         for gang in self.gangs:
             if gang != top_gang: gang.heal_crew(25)

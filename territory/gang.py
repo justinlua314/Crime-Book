@@ -1,13 +1,14 @@
 from random import sample
 from random import randint as rand
 
-from objects.humans import Criminal, CrewMember
+from objects.humans import Criminal
 
 class Gang:
     def __init__(self, world, name=""):
         self.name = name
         self.money = rand(100, 1000)
-        self.crew = {}
+        self.crew = {} # Criminal_id : Criminal
+        self.crew_cap = 500
         self.turns_until_backup = rand(5, 20)
         self.ai = True
 
@@ -22,6 +23,7 @@ class Gang:
     def __len__(self): return len(self.crew)
     
     def add_criminal(self, world):
+        if len(self.crew) == self.crew_cap: return
         new_criminal = Criminal(world, self.name)
         new_criminal.arm(world)
         self.crew[id(new_criminal)] = new_criminal
@@ -101,9 +103,20 @@ class Gang:
             if self.money < 200: break
             power = (0 if member.weapon == None else member.weapon.power)
 
-            if power < 20:
-                self.money -= 200
-                member.weapon = world.weapons.lookup_weapon("pistol")
+            wep_options = { # wep_id : (power, cost)
+                "rifle" : (30, 600),
+                "shotgun" : (40, 400),
+                "pistol" : (20, 200),
+                "bat" : (10, 20)
+            }
+
+            for id, data in wep_options.items():
+                if power < data[0]:
+                    if self.money >= data[1]:
+                        self.money -= data[1]
+                        member.weapon = world.weapons.lookup_weapon(id)
+                        break
+                else: break
     
     def think(self, world):
         self.turns_until_backup -= 1
@@ -120,7 +133,8 @@ class PlayerGang(Gang):
     def __init__(self, world):
         self.name = world.player_gang_name
         self.money = 0
-        self.crew = {}
+        self.crew = {} # CrewMember_id : CrewMember
+        self.crew_cap = 500
         self.ai = False
     
     def add_crew(self, world, amount=1):
@@ -128,10 +142,31 @@ class PlayerGang(Gang):
         amount = min(len(ply.crew), amount)
         targets = sample(sorted(ply.crew), amount)
 
-        for id in targets: self.crew[id] = ply.crew.pop(id)
+        for id in targets:
+            if len(self.crew) == self.crew_cap: break
+            self.crew[id] = ply.crew.pop(id)
+    
+    def deficit(self, money_cap):
+        total = 0
+
+        for crew in self.crew.values():
+            power = (0 if crew.weapon == None else crew.weapon.power)
+            
+            if power < 30: total += 600
+            if crew.armor < 50: total += 100
+
+        return total + (money_cap - self.money)
     
     def populate(self, world, amount=1): self.add_crew(world, amount)
     
     def crew_population(self): return len(self.crew)
     
-    def think(self, world): return
+    def think(self, world):
+        if len(self.crew) == 0: return
+        self.money += world.gang_coffer
+        self.go_shopping(world)
+
+        if self.money > world.gang_money_cap:
+            world.gang_coffer = (self.money - world.gang_money_cap)
+            self.money = world.gang_money_cap
+        else: world.gang_coffer = 0

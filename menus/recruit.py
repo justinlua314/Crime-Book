@@ -12,6 +12,7 @@ def recruit_campaign(world, strategy=0):
         case 2: print("Let's show them the kind of money we make around here")
 
     ply = world.player
+
     count = crew_count_input(ply, 5000)
     if count == 0: return
 

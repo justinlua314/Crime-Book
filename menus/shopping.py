@@ -55,6 +55,22 @@ menu_buy_gear = Menu(
 )
 
 
+def bank_deposit(world): world.bank.deposit_savings(world)
+def bank_withdraw(world): world.bank.withdraw_savings(world)
+def bank_take_loan(world): world.bank.take_loan(world)
+def bank_pay_loan(world): world.bank.pay_loan(world)
+
+
+menu_bank = Menu(
+    "The Bank", "How can we help you sir", [
+        Option("Deposit Money", '', 'd', bank_deposit),
+        Option("Withdraw Money", '', 'w', bank_withdraw),
+        Option("Request Loan", '', 'l', bank_take_loan),
+        Option("Make Loan Payment", '', 'p', bank_pay_loan)
+    ]
+)
+
+
 def shady_donation(world):
     ply = world.player
     print("Money: $", ply.money, sep='')
@@ -91,7 +107,9 @@ def hire_lawyers(world):
 
     print("Cost per Lawyer: $", cost, " every ", lawyers.turns, " turns", sep='')
     print("\nLawyers on the books:", lawyers.count)
-    print("Current cost every five turns: $", (cost * count), sep='')
+    print("Current cost every", lawyers.turns, "turns: $", (cost * count), sep='')
+
+    print("\nMoney: $", ply.money, sep='')
 
     hiring = valid_numeric_input(
         "\nHow many Lawyers are we hiring", 0, can_afford, 0
@@ -104,6 +122,21 @@ def hire_lawyers(world):
     ply.money -= cost
 
     print("\nHired ", hiring, " Lawyers for $", cost, sep='')
+    input_buffer()
+
+def fire_lawyers(world):
+    lawyers = world.lawyers
+    count = lawyers.count
+
+    print("Lawyers on the books:", count)
+
+    firing = valid_numeric_input(
+        "How many Lawyers are we firing", 0, count, 0
+    )
+
+    lawyers.count -= firing
+
+    print(firing, "Lawyers fired")
     input_buffer()
 
 
@@ -130,6 +163,7 @@ menu_gov_trade = Menu(
     "Goverment Trades", "What sort of business do you have with us", [
         Option("Make Shady Donation", '', 'd', shady_donation),
         Option("Hire Lawyers", '', 'l', hire_lawyers),
+        Option("Fire Lawyers", '', 'f', fire_lawyers),
         Option("Purchase new City", '', 'c', new_city)
     ]
 )
@@ -144,48 +178,50 @@ def get_gambling_pot(world):
         0, world.player.money, min(world.player.money, 100000)
     )
 
-def casino_blackjack(world):
-    from minigames.blackjack import Blackjack
+def casino_game(world, game_obj):
     ply = world.player
     pot = get_gambling_pot(world)
 
     if pot == 0:
         leave_casino()
         return
-
+    
     ply.money -= pot
 
     system("cls")
-    blackjack = Blackjack(pot)
-    ply.money += blackjack.play(world)
-    leave_casino()
-
-def casino_horse_racing(world):
-    from minigames.horse_betting import HorseBetting
-    ply = world.player
-    pot = get_gambling_pot(world)
-
-    if pot == 0:
-        leave_casino()
-        return
-
-    ply.money -= pot
-
-    system("cls")
-    game = HorseBetting(pot)
+    game = game_obj(pot)
     ply.money += game.play(world)
     leave_casino()
 
+def casino_bingo(world):
+    from minigames.bingo import Bingo
+    casino_game(world, Bingo)
+
+def casino_blackjack(world):
+    from minigames.blackjack import Blackjack
+    casino_game(world, Blackjack)
+
+def casino_horse_racing(world):
+    from minigames.horse_betting import HorseBetting
+    casino_game(world, HorseBetting)
+
+def casino_double_or_nothing(world):
+    from minigames.double_nothing import DoubleOrNothing
+    casino_game(world, DoubleOrNothing)
+
 menu_casino = Menu(
     "Casino", "What game would you like to play", [
+        Option("Bingo", '', 'n', casino_bingo),
         Option("Blackjack", '', 'b', casino_blackjack),
-        Option("Horse Racing", '', 'h', casino_horse_racing)
+        Option("Horse Racing", '', 'h', casino_horse_racing),
+        Option("Double or Nothing", '', 'd', casino_double_or_nothing)
     ]
 )
 
 menu_shopping = Menu(
     "Shopping and Commerce", "Where would you like to go", [
         Option("Buy Gear", "menu_buy_gear", 'g'),
+        Option("Visit Bank", "menu_bank", 'b'),
         Option("Government Trades", "menu_gov_trade", 't'),
         Option("Visit Casino", "menu_casino", 'c'),
     ]

@@ -40,20 +40,11 @@ MenuManager
 
 
 
+attribute               val needed for 1000 credit
+savings                 500000
+world.player.money      100000
 
 
+max_loan = credit_score * 100
 
-
-
-
-
-
-Accuracy/Dodging
-    accuracy = 4     1111
-    dodging = 6     111111
-
-    [xxxxoooooo]
-        ^
-
-
-
+1000 = savings + money / 100

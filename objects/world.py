@@ -6,6 +6,7 @@ from objects.weapons import crime_weapons
 from objects.warehouse import Warehouse, Item
 from objects.car_shop import CarShop
 from objects.lawyers import Lawyers
+from objects.bank import Bank
 
 from territory.city import City
 
@@ -27,6 +28,8 @@ class World:
         self.warehouse = Warehouse()
         self.car_shop = CarShop()
 
+        self.bank = Bank()
+
         self.cities = {} # city_name : City
         self.city_cost = 500000
 
@@ -47,42 +50,6 @@ class World:
         new_city.name = name
         self.cities[name] = new_city
 
-    
-    def distribute_coffer(self):
-        gang_count = 0
-        cap = self.gang_money_cap
-
-        for city in self.cities.values():
-            for block in city.blocks:
-                for gang in block.gangs:
-                    if not gang.ai and gang.crew_population() > 0:
-                        if gang.money < cap: gang_count += 1
-                        elif gang.money > cap:
-                            diff = gang.money - cap
-                            self.gang_coffer += diff
-                            gang.money = cap
-        
-        if gang_count == 0: return
-
-        budget = (self.gang_coffer // gang_count)
-        spent = (budget * gang_count)
-        self.gang_coffer -= spent
-
-        last_crew = None
-
-        for city in self.cities.values():
-            for block in city.blocks:
-                for gang in block.gangs:
-                    if not gang.ai and gang.crew_population() > 0:
-                        if gang.money < cap:
-                            last_crew = gang
-                            gang.money += budget
-        
-        if self.gang_coffer < budget:
-            last_crew.money += self.gang_coffer
-            self.gang_coffer = 0
-    
-
     def gang_deficite(self):
         cap = self.gang_money_cap
         deficit = 0
@@ -91,9 +58,9 @@ class World:
             for block in city.blocks:
                 for gang in block.gangs:
                     if not gang.ai and len(gang) > 0:
-                        deficit += max((cap - gang.money), 0)
+                        deficit += gang.deficit(cap)
         
-        return deficit
+        return max(deficit, 0)
 
 
     def send_crew(self, amount):
@@ -116,8 +83,8 @@ class World:
 
 
     def think(self, crime_commited):
-        self.distribute_coffer()
         for city in self.cities.values(): city.think(self)
         self.player.think(self, crime_commited)
         self.car_shop.think()
+        self.bank.think(self)
         self.lawyers.think(self)

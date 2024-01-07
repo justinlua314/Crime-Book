@@ -11,6 +11,10 @@ def cheat_rosenberg(world): world.lawyers.count = world.lawyers.max_count
 def cheat_ilose(world):
     world.evacuate_crew()
     world.player.crew.clear()
+def cheat_busted(world): world.player.heat = (world.player.heat_cap + 1)
+
+def cheat_time_warp(world):
+    for _ in range(50): world.think(False)
 
 def cheat_debug(world):
     for city_name, city in world.cities.items():
@@ -30,5 +34,7 @@ cheat_codes = {
     "undercover"        : cheat_undercover,
     "rosenberg"         : cheat_rosenberg,
     "ilose"             : cheat_ilose,
+    "busted"            : cheat_busted,
+    "timewarp"          : cheat_time_warp,
     "debug"             : cheat_debug
 }

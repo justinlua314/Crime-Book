@@ -27,6 +27,17 @@ class CarShop(Warehouse):
                 self.cars[car.id][car.quality] = deepcopy(car)
         else:
             self.cars[car.id] = {car.quality : deepcopy(car)}
+    
+    def remove_car(self, item_id, quality_id, amount):
+        self.cars[item_id][quality_id].count -= amount
+
+        if self.cars[item_id][quality_id].count <= 0:
+            self.cars[item_id].pop(quality_id)
+
+            if len(self.cars[item_id]) == 0: self.cars.pop(item_id)
+    
+    def remove_item(self, item_id, quality_id, amount):
+        self.remove_car(item_id, quality_id, amount)
 
     def sell_items(self):
         cars_to_sell = rand(0, 4)

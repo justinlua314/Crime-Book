@@ -101,23 +101,36 @@ class Player:
                     if item.name in items_siezed: items_siezed[item.name] += siezed
                     else: items_siezed[item.name] = siezed
 
-                    cooldown += 1
+                    #cooldown += 1
+                    cooldown = min(cooldown + 1, 5)
                 else:
                     cooldown = max(cooldown - 1, 2)
         
         for id, data in targets.items():
             for target in data: wh.remove_item(id, target[0], target[1])
 
-        self.vests //= rand(2, 8)
+        #self.vests //= rand(2, 8)
+        self.vests = int(self.vests * 0.1)
         for weapon_id in self.weapons: self.weapons[weapon_id] //= rand(2, 8)
 
+        '''
         limit = self.money // 8
         money_siezed = rand(limit, max(self.money - (len(self.crew) * 100), limit))
+        '''
 
+        money_siezed = int(self.money * ((8 + rand(-1, 1)) / 10))
+        
         ply = world.player
+
+        ply.heat_cap //= 4
+
+        '''
         lower = len(ply.crew) // 16
         upper = len(ply.crew) // 4
         crew_siezed = sample(list(ply.crew.keys()), rand(lower, upper))
+        '''
+
+        crew_siezed = sample(list(ply.crew.keys()), max(len(ply.crew) // rand(2, 4), 1))
 
         for id in crew_siezed: ply.crew.pop(id)
 

@@ -151,7 +151,8 @@ def view_coffer(world):
     input_buffer()
 
 def deposit_coffer(world):
-    print("Gang Coffer: $", world.gang_coffer, '\n', sep='')
+    print("Gang Coffer: $", world.gang_coffer, sep='')
+    print("Money needed by your Gangs: $", world.gang_deficite(), '\n', sep='')
 
     ply = world.player
     donation = valid_numeric_input(
@@ -166,7 +167,8 @@ def deposit_coffer(world):
         input_buffer()
 
 def withdraw_coffer(world):
-    print("Gang Coffer: $", world.gang_coffer, '\n', sep='')
+    print("Gang Coffer: $", world.gang_coffer, sep='')
+    print("Money needed by your Gangs: $", world.gang_deficite(), '\n', sep='')
 
     ply = world.player
     withdraw = valid_numeric_input(
@@ -185,9 +187,13 @@ def set_gang_cap(world):
     print("If a gang controlled by you has more money than the cap, they will donate the excess funds back to your money coffer.")
     print("\nGang Cap: $", world.gang_money_cap, sep='')
 
-    world.gang_money_cap = valid_numeric_input(
+    new_cap = valid_numeric_input(
         "What would you like the new cap to be", 0, 100000, 5000
     )
+
+    if new_cap == 0: return
+
+    world.gang_money_cap = new_cap
 
     print("New gang money cap is $", world.gang_money_cap, sep='')
     input_buffer()

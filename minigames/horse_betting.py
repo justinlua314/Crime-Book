@@ -174,8 +174,8 @@ class HorseBetting:
 
         print("Wins:", self.wins, "\nLosses:", self.loses)
 
-        try: print("Win/Loss Ratio:", self.wins / self.loses)
-        except: print("Win/Loss Ratio: 0")
+        try: print("Win/Loss Ratio:", round(self.wins / self.loses, 2))
+        except: print("Win/Loss Ratio:", self.wins)
 
         print("\nTotal Winnings: $", self.winnings, '\n', sep='')
         return self.money

@@ -18,7 +18,7 @@ class BlackjackPlayer:
         self.wins = 0
         self.loses = 0
         self.pushes = 0
-        self.starting_cash = self.money
+        self.winnings = 0
 
     
     def __repr__(self): return self.hand.__repr__()
@@ -135,10 +135,12 @@ class BlackjackPlayer:
         winnings = (self.bet * 2)
         print("You won $", self.bet, sep='')
         self.money += winnings
+        self.winnings += winnings
         self.wins += 1
     
     def lose(self):
-        print("You lost $" + str(self.bet))
+        print("You lost $", self.bet, sep='')
+        self.winnings -= self.bet
         self.loses += 1
 
     def push(self):
@@ -240,8 +242,10 @@ class Blackjack:
                     "\nPushes:", ply.pushes
                 )
 
-                try: print("Win/Loss Ratio:", ply.wins / ply.loses)
-                except: print("Win/Loss Ratio: 0") # wins = 0
+                print("\nTotal Winnings: $", ply.winnings, '\n', sep='')
+
+                try: print("Win/Loss Ratio:", round(ply.wins / ply.loses, 2))
+                except: print("Win/Loss Ratio:", ply.wins)
 
                 return ply.money
 

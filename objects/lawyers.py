@@ -6,7 +6,7 @@ class Lawyers:
         self.max_count = 1000
         self.cost = 500
         self.effect = 5
-        self.turns = 5
+        self.turns = 10
         self.turn_counter = 0
     
     def think(self, world):

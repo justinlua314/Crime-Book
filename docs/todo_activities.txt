@@ -1,0 +1,22 @@
+Crime
+    Heist
+        Liquor Store
+        Grocery Store
+        Gun Store
+        Bank
+        Casino
+
+    Hussle (Needs more or needs to be scrapped)
+        Fundraiser
+        Weed op
+        Yayo op
+
+Shopping
+    Casino
+        Slots
+    
+    Real Estate
+        Recruitment Office
+        Grow Farm
+        Yayo Factory
+        Scrap Yard

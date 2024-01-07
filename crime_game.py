@@ -6,10 +6,11 @@ from menu import MenuManager, valid_numeric_input, input_buffer, coming_soon
 from menus.home import menu_home
 from menus.crime import menu_crime, menu_crime_petty, rob_pedestrian, car_jacking, house_robbery
 from menus.territory import menu_territory, menu_strategy, menu_withdraw_crew, menu_coffer, target_block, city_takeover, world_takeover, retract_crew_block, retract_crew_city, retract_crew_world, view_coffer, deposit_coffer, withdraw_coffer, inspect_world
-from menus.shopping import menu_shopping, menu_buy_gear, menu_gov_trade, menu_casino, shop_buy_bat, shop_buy_armor, shop_buy_pistol, shop_buy_shotgun, shop_buy_rifle, shady_donation, hire_lawyers, new_city, casino_blackjack, casino_horse_racing
+from menus.shopping import menu_shopping, menu_buy_gear, menu_bank, menu_gov_trade, menu_casino, shop_buy_bat, shop_buy_armor, shop_buy_pistol, shop_buy_shotgun, shop_buy_rifle, bank_deposit, bank_withdraw, bank_take_loan, bank_pay_loan, shady_donation, hire_lawyers, fire_lawyers, new_city, casino_bingo, casino_blackjack, casino_horse_racing, casino_double_or_nothing
 from menus.wh import menu_warehouse, inspect_gear, inspect_warehouse, sell_warehouse_items, distribute_armor, distribute_weapons, car_money
 from menus.crew import menu_crew, crew_summary, crew_skills
 from menus.recruit import menu_recruit, recruit_peds, intimidate_peds, bribe_peds
+from menus.busy import menu_business
 
 class CrimeGame:
     def __init__(self):
@@ -26,11 +27,13 @@ class CrimeGame:
             "menu_coffer" : menu_coffer,
             "menu_shopping" : menu_shopping,
             "menu_buy_gear" : menu_buy_gear,
+            "menu_bank" : menu_bank,
             "menu_gov_trade" : menu_gov_trade,
             "menu_casino" : menu_casino,
             "menu_warehouse" : menu_warehouse,
             "menu_crew" : menu_crew,
-            "menu_recruit" : menu_recruit
+            "menu_recruit" : menu_recruit,
+            "menu_business" : menu_business
         },
         
         {   # Macros to navigate menus faster
@@ -52,11 +55,18 @@ class CrimeGame:
             "sgp" : shop_buy_pistol,
             "sgs" : shop_buy_shotgun,
             "sgr" : shop_buy_rifle,
+            "sbd" : bank_deposit,
+            "sbw" : bank_withdraw,
+            "sbl" : bank_take_loan,
+            "sbp" : bank_pay_loan,
             "std" : shady_donation,
             "stl" : hire_lawyers,
+            "stf" : fire_lawyers,
             "stc" : new_city,
+            "sci" : casino_bingo,
             "scb" : casino_blackjack,
             "sch" : casino_horse_racing,
+            "scd" : casino_double_or_nothing,
             "wg"  : inspect_gear,
             "wi"  : inspect_warehouse,
             "ws"  : sell_warehouse_items,
@@ -71,6 +81,7 @@ class CrimeGame:
         })
 
     def lose(self):
+        system("cls")
         print("There's no more Crew Members backing you")
         print("\nThe Streets are full, but with the wrong guys")
         print("\nTime for you to go join them yourself.")

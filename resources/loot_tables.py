@@ -47,21 +47,21 @@ def roll_household_quality():
 
 def roll_household_item():
     item_data = {   # item_name : base_value
-        "Radio"             : 5,
-        "TV"                : 15,
-        "Jewelry"           : 20,
-        "Designer Clothes"  : 30,
-        "Tool Box"          : 35,
-        "Collectors Liquor" : 40,
-        "Laptop"            : 50,
-        "Gaming PC"         : 60,
-        "Vase"              : 80,
-        "Sound System"      : 100,
-        "Smoke Pack"        : 250,
-        "Famous Painting"   : 500,
-        "Yayo Pack"         : 1000,
-        "Gold Bars"         : 2000,
-        "Precious Diamond"  : 5000
+        "Radio"             : 20,
+        "TV"                : 30,
+        "Jewelry"           : 80,
+        "Designer Clothes"  : 120,
+        "Tool Box"          : 140,
+        "Collectors Liquor" : 160,
+        "Laptop"            : 200,
+        "Gaming PC"         : 240,
+        "Vase"              : 320,
+        "Sound System"      : 400,
+        "Smoke Pack"        : 1000,
+        "Famous Painting"   : 2000,
+        "Yayo Pack"         : 4000,
+        "Gold Bars"         : 8000,
+        "Precious Diamond"  : 20000
     }
 
     total = sum(item_data.values())

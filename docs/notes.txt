@@ -14,9 +14,9 @@ Scrapyard business might be able to reuse the carshop with different sell rate
 
 Item stolen log for house robberies?
 
-
 Ways to lower Heat
     Hacking minigames
-    Hire lawyers
     Community Service
     Divert heat to enemy gang?
+
+Finish objects.business and menu.busy
