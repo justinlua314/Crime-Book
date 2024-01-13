@@ -175,7 +175,9 @@ class CrewMember(Human):
         self.set_stat("strength", rand(2, 6))
         self.set_stat("shooting", rand(2, 6))
     
-    def fight(self, target, world, log):
+    # If player Bool is False, dead crew members won't be deleted automatically
+    # Hack to make heists possible
+    def fight(self, target, world, log, player=True):
         while self.alive() and target.alive():
             s_power = self.power_level()
             self.use_weapon()
@@ -204,7 +206,7 @@ class CrewMember(Human):
         ply = world.player
 
         if self.alive():
-            log.log("crew_survived", "Crew members survived fight")
+#            log.log("crew_survived", "Crew members survived fight")
             log.log("money_looted", "Money Looted", target.money)
             ply.money += target.money
 
@@ -231,7 +233,7 @@ class CrewMember(Human):
             kill_id = ("crew_killed_by_" + target.type.lower())
             kill_desc = ("Crew killed by " + target.type)
             log.log(kill_id, kill_desc)
-            ply.crew.pop(id(self))
+            if player: ply.crew.pop(id(self))
 
     def recruit(self, target, world, log):
         ply = world.player

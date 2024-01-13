@@ -13,7 +13,7 @@ def recruit_campaign(world, strategy=0):
 
     ply = world.player
 
-    count = crew_count_input(ply, 5000)
+    count = crew_count_input(ply, 500, False)
     if count == 0: return
 
     if strategy == 2:

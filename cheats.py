@@ -14,15 +14,11 @@ def cheat_ilose(world):
 def cheat_busted(world): world.player.heat = (world.player.heat_cap + 1)
 
 def cheat_time_warp(world):
+    print("Warping 50 turns into the future")
     for _ in range(50): world.think(False)
 
 def cheat_debug(world):
-    for city_name, city in world.cities.items():
-        for block in city.blocks:
-            for gang in block.gangs:
-                if not gang.ai: print(city_name, len(gang.crew))
-
-    input("\n\nPress enter to continue")
+    world.player.heat_cap = 2000
 
 
 

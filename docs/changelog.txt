@@ -1,3 +1,39 @@
+Version 0.2
+
+Added Heists
+    Bank Heist
+    Prison Heist
+
+Added Businesses
+    Recruitment Office
+    Grow Farm
+    Yayo Factory
+
+Added new Casino game
+    Wheel of Fortune
+
+
+Added new Gang Names
+Lowered max crew for recruiting and ped robbery for performance and balance
+Fixed block takeover bugs
+Fixed Inspect crew skills menu always displaying zeros
+Cheater tag added to menus if you use cheat codes
+Made it slightly more possible to lose
+Fixed winnings stat on all Casino games
+Added cap to enemy gang size. Before it was basically a memory leak
+
+Rebalanced Lawyers
+    Cost less, remove less heat, lower cap
+
+Added hacking minigame to lower heat level
+    Crime -> Hack Police Computers
+
+
+
+
+
+
+
 Version 0.1
 Small tweaks to most things
 

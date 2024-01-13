@@ -1,10 +1,9 @@
 Crime
     Heist
-        Liquor Store
-        Grocery Store
-        Gun Store
-        Bank
-        Casino
+        Car Museum
+        Police Station
+        Military Base
+        Nuclear Power Plant
 
     Hussle (Needs more or needs to be scrapped)
         Fundraiser
@@ -14,9 +13,8 @@ Crime
 Shopping
     Casino
         Slots
+        Video Poker
     
-    Real Estate
-        Recruitment Office
-        Grow Farm
-        Yayo Factory
+    Businesses
         Scrap Yard
+        Car Showroom

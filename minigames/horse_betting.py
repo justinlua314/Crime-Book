@@ -52,6 +52,7 @@ class HorseBetting:
     def __init__(self, pot=100):
         self.turns_per_race = 200
         self.money = pot
+        self.start_money = pot
         self.bet_horse = 0
         self.bet_money = 0
         self.position_shifts = 20
@@ -59,10 +60,10 @@ class HorseBetting:
         self.horses = [RaceHorse() for _ in range(len(self.colors))]
         self.odds = [2 ** n for n in range(1, len(self.colors) + 1)]
         self.odds.reverse()
+        self.barrier = ('-' * 103)
 
         self.wins = 0
         self.loses = 0
-        self.winnings = 0
     
     def reset_race(self):
         for horse in self.horses:
@@ -76,11 +77,11 @@ class HorseBetting:
         )
 
         for index, horse in enumerate(self.horses):
-            print('-' * 103)
+            print(self.barrier)
             color = self.colors[index]
             print(colored(str(horse), color))
 
-        print('-' * 103)
+        print(self.barrier)
 
     def place_bets(self):
         render = PrettyTable()
@@ -98,7 +99,7 @@ class HorseBetting:
         self.odds.reverse()
         print(render)
 
-        print("\nMoney: $", self.money, sep='')
+        print(f"\nMoney: ${self.money}")
 
         selection = valid_numeric_input(
             "Which horse would you like to bet for", 0, len(self.horses), 0
@@ -122,13 +123,11 @@ class HorseBetting:
             mult = self.odds[len(self.odds) - winner - 1]
             winnings = self.bet_money * mult
 
-            print("\nCongrats! You won $", winnings, sep='')
+            print(f"\nCongrats! You won ${winnings}")
             self.money += winnings
-            self.winnings += winnings
             self.wins += 1
         else:
             print("\nYou lose, better luck next time!")
-            self.winnings -= self.bet_money
             self.loses += 1
         
         input_buffer()
@@ -177,5 +176,5 @@ class HorseBetting:
         try: print("Win/Loss Ratio:", round(self.wins / self.loses, 2))
         except: print("Win/Loss Ratio:", self.wins)
 
-        print("\nTotal Winnings: $", self.winnings, '\n', sep='')
+        print(f"\nTotal Winnings: ${self.money - self.start_money}")
         return self.money

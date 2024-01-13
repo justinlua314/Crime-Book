@@ -14,6 +14,7 @@ class Block:
             self.gangs.append(new_gang)
         
         self.gangs.append(PlayerGang(world))
+        world.business.increase_limit()
     
     def add_crew_members(self, world, crew):
         ply = world.player

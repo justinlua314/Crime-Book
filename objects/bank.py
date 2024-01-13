@@ -11,21 +11,25 @@ class Bank:
 
         self.save_withdraw_history = 0
         self.save_withdraw_limit = 1000
+        self.save_withdraw_cap = 1000000
         self.save_withdraw_cooldown = 10
         self.save_withdraw_ticker = 0
 
         self.save_interest = 5
-        self.dividend_cooldown = 30
+        self.dividend_cooldown = 10
         self.dividend_ticker = 0
+        self.auto_withdraw = 0
 
         self.original_loan = 0
         self.loan = 0
         self.interest_rate = 5
-        self.interest_cooldown = 10
+        self.interest_cooldown = 30
         self.interest_ticker = 0
 
     def deposit_savings(self, world):
+        print(f"Savings: ${self.savings}")
         ply = world.player
+        print(f"Money: ${ply.money}\n")
         print("How much money would you like to deposit into your savings?")
 
         deposit = valid_numeric_input(
@@ -37,15 +41,17 @@ class Bank:
         self.savings += deposit
         ply.money -= deposit
 
-        print("Deposited $", deposit, " into savings", sep='')
+        print(f"Deposited ${deposit} into savings")
         limit_changed = False
 
-        while self.save_withdraw_limit < self.savings:
+        while self.save_withdraw_limit < self.savings and self.save_withdraw_limit < self.save_withdraw_cap:
             limit_changed = True
             self.save_withdraw_limit *= 10
+
+        #self.save_withdraw_limit //= 10
         
         if limit_changed:
-            print("\nSavings withdraw limit increased to $", self.save_withdraw_limit, sep='')
+            print(f"\nSavings withdraw limit increased to ${self.save_withdraw_limit}")
 
         input_buffer()
     
@@ -58,6 +64,9 @@ class Bank:
             return
 
         ply = world.player
+        print(f"Savings: ${self.savings}")
+        print(f"Withdraw Limit: ${limit}")
+        print(f"Money: ${ply.money}\n")
         print("How much money would you like to withdraw from your savings?")
 
         withdraw = valid_numeric_input(
@@ -70,22 +79,41 @@ class Bank:
         self.save_withdraw_history += withdraw
         ply.money += withdraw
 
-        print("Withdrawn $", withdraw, " from savings", sep='')
+        print(f"Withdrawn ${withdraw} from savings")
         input_buffer()
 
+
+    def change_auto_withdraw(self, world):
+        ply = world.player
+
+        print(f"Money: ${ply.money}")
+        print(f"Savings: ${self.savings}")
+        print(f"Auto Withdraw: ${self.auto_withdraw}\n")
+
+        print(f"Auto Withdraw allows you to pull money from your savings account automatically every {self.dividend_cooldown} turns")
+        print("Money pulled this way is not counted towards your withdraw limit")
+
+        print("\nHow much would you like to auto withdraw?")
+
+        value = valid_numeric_input("Set Auto Withdraw", 0, 100000000, 0)
+
+        self.auto_withdraw = value
+
+        print(f"\nAuto Withdraw Account set to ${value}")
+        input_buffer()
 
     def take_loan(self, world):
         from math import sqrt
 
         if self.original_loan != 0:
-            print("You already have a loan for $", self.loan, sep='')
+            print(f"You already have a loan for ${self.loan}")
             print("How's about we pay that off first?")
             input_buffer()
             return
         
         ply = world.player
         max_loan = (ply.money + self.savings) * int(sqrt(len(ply.crew)))
-        print("It looks like you are elligable for a $", max_loan, " loan", sep='')
+        print(f"It looks like you are elligable for a ${max_loan} loan")
 
         amount = valid_numeric_input(
             "What size of loan would you like to take out", 0, max_loan, 0
@@ -97,7 +125,7 @@ class Bank:
         self.loan = amount
         ply.money += amount
 
-        print("\nYou are now locked into a $", amount, " loan with a ", self.interest_rate, "% interest every ", self.interest_cooldown, " turns", sep='')
+        print(f"\nYou are now locked into a ${amount} loan with a {self.interest_rate}% interest every {self.interest_cooldown} turns")
         input_buffer()
     
     def pay_loan(self, world):
@@ -107,8 +135,8 @@ class Bank:
             return
 
         ply = world.player
-        print("Loan: $", self.loan, '\nOriginal Loan: $', self.original_loan, sep='')
-        print("\nMoney: $", ply.money, sep='')
+        print(f"Loan: ${self.loan}\nOriginal Loan: ${self.original_loan}")
+        print(f"\nMoney: ${ply.money}")
         print("\nHow much money would you like to pay on your loan?")
 
         limit = min(ply.money, self.loan)
@@ -119,7 +147,7 @@ class Bank:
         self.loan -= payment
         ply.money -= payment
 
-        print("\nPaid $", payment, " on your loan", sep='')
+        print(f"\nPaid ${payment} on your loan")
 
         if self.loan == 0:
             self.original_loan = 0
@@ -133,8 +161,8 @@ class Bank:
 
         system("cls")
         print("You have fallen far too behind on your bank loan\n")
-        print("Original Loan Amount: $", self.original_loan, sep='')
-        print("Current Loan Amount: $", self.loan, sep='')
+        print(f"Original Loan Amount: ${self.original_loan}")
+        print(f"Current Loan Amount: ${self.loan}")
         print("\nYour property is being siezed to pay for your loan\n")
 
         if self.loan > self.savings:
@@ -199,7 +227,7 @@ class Bank:
         
         log.print_events()
 
-        if self.loan > 0: print("\nLoan left after siezure: $", self.loan, sep='')
+        if self.loan > 0: print(f"\nLoan left after siezure: ${self.loan}")
         else:
             print("Your loan was paid off with siezed assets. Don't let it happen again")
             self.original_loan = 0
@@ -209,7 +237,6 @@ class Bank:
 
 
     def think(self, world):
-        ply = world.player
         self.save_withdraw_ticker += 1
 
         if self.save_withdraw_ticker == self.save_withdraw_cooldown:
@@ -221,9 +248,15 @@ class Bank:
 
         if self.dividend_ticker == self.dividend_cooldown:
             self.dividend_ticker = 0
-            dividend = sum(self.savings_history) // self.dividend_cooldown
-            self.savings += dividend
+            dividend = int((sum(self.savings_history) // self.dividend_cooldown) * (self.save_interest / 100))
+            #self.savings += dividend
+            self.savings = min(self.savings + dividend, 20000000)
             self.savings_history = []
+
+            if self.auto_withdraw > 0:
+                amount = min(self.auto_withdraw, self.savings)
+                self.savings -= amount
+                world.player.money += amount
         
         if self.original_loan == 0: return
 

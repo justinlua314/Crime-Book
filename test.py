@@ -1,4 +1,7 @@
-money = 1000000
-credit_score = 1000
+x = {
+    'a' : 1,
+    'b' : 2,
+    'c' : 3
+}
 
-print(money * (credit_score // 10))
+print(list(x))

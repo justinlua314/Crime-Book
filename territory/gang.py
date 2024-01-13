@@ -121,7 +121,7 @@ class Gang:
     def think(self, world):
         self.turns_until_backup -= 1
 
-        if self.turns_until_backup == 0:
+        if self.turns_until_backup == 0 and len(self.crew) < 50:
             self.turns_until_backup = rand(5, 20)
             self.add_criminal(world)
 

@@ -17,6 +17,8 @@ Term Color      termcolor       Displaying color in terminal
 
 
 
+Run install_libraries.bat or...
+
 In your console, enter the command below
 
 python3 -m pip install --upgrade Faker prettytable termcolor

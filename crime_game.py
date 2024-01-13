@@ -1,16 +1,17 @@
 from os import system
 
 from objects.world import World
-from menu import MenuManager, valid_numeric_input, input_buffer, coming_soon
+from menu import MenuManager, input_buffer
 
 from menus.home import menu_home
-from menus.crime import menu_crime, menu_crime_petty, rob_pedestrian, car_jacking, house_robbery
-from menus.territory import menu_territory, menu_strategy, menu_withdraw_crew, menu_coffer, target_block, city_takeover, world_takeover, retract_crew_block, retract_crew_city, retract_crew_world, view_coffer, deposit_coffer, withdraw_coffer, inspect_world
-from menus.shopping import menu_shopping, menu_buy_gear, menu_bank, menu_gov_trade, menu_casino, shop_buy_bat, shop_buy_armor, shop_buy_pistol, shop_buy_shotgun, shop_buy_rifle, bank_deposit, bank_withdraw, bank_take_loan, bank_pay_loan, shady_donation, hire_lawyers, fire_lawyers, new_city, casino_bingo, casino_blackjack, casino_horse_racing, casino_double_or_nothing
-from menus.wh import menu_warehouse, inspect_gear, inspect_warehouse, sell_warehouse_items, distribute_armor, distribute_weapons, car_money
-from menus.crew import menu_crew, crew_summary, crew_skills
-from menus.recruit import menu_recruit, recruit_peds, intimidate_peds, bribe_peds
-from menus.busy import menu_business
+
+import menus.crime as Crime
+import menus.territory as Territory
+import menus.shopping as Shopping
+import menus.wh as Warehouse
+import menus.crew as Crew
+import menus.recruit as Recruit
+import menus.busy as Business
 
 class CrimeGame:
     def __init__(self):
@@ -19,80 +20,94 @@ class CrimeGame:
         # Menus cannot be accessed until they are registered here
         self.menu_manager = MenuManager("menu_home", {
             "menu_home" : menu_home,
-            "menu_crime" : menu_crime,
-            "menu_crime_petty" : menu_crime_petty,
-            "menu_territory" : menu_territory,
-            "menu_strategy" : menu_strategy,
-            "menu_withdraw_crew" : menu_withdraw_crew,
-            "menu_coffer" : menu_coffer,
-            "menu_shopping" : menu_shopping,
-            "menu_buy_gear" : menu_buy_gear,
-            "menu_bank" : menu_bank,
-            "menu_gov_trade" : menu_gov_trade,
-            "menu_casino" : menu_casino,
-            "menu_warehouse" : menu_warehouse,
-            "menu_crew" : menu_crew,
-            "menu_recruit" : menu_recruit,
-            "menu_business" : menu_business
+            "menu_crime"            : Crime.menu_crime,
+            "menu_crime_petty"      : Crime.menu_crime_petty,
+            "menu_heist"            : Crime.menu_heist,
+            "menu_territory"        : Territory.menu_territory,
+            "menu_strategy"         : Territory.menu_strategy,
+            "menu_withdraw_crew"    : Territory.menu_withdraw_crew,
+            "menu_coffer"           : Territory.menu_coffer,
+            "menu_shopping"         : Shopping.menu_shopping,
+            "menu_buy_gear"         : Shopping.menu_buy_gear,
+            "menu_bank"             : Shopping.menu_bank,
+            "menu_gov_trade"        : Shopping.menu_gov_trade,
+            "menu_casino"           : Shopping.menu_casino,
+            "menu_warehouse"        : Warehouse.menu_warehouse,
+            "menu_crew"             : Crew.menu_crew,
+            "menu_recruit"          : Recruit.menu_recruit,
+            "menu_business"         : Business.menu_business
         },
         
         {   # Macros to navigate menus faster
-            "cpr" : rob_pedestrian,
-            "cpc" : car_jacking,
-            "cph" : house_robbery,
-            "ttb" : target_block,
-            "ttc" : city_takeover,
-            "ttw" : world_takeover,
-            "trb" : retract_crew_block,
-            "trc" : retract_crew_city,
-            "trw" : retract_crew_world,
-            "tw"  : inspect_world,
-            "tcc" : view_coffer,
-            "tcd" : deposit_coffer,
-            "tcw" : withdraw_coffer,
-            "sgb" : shop_buy_bat,
-            "sga" : shop_buy_armor,
-            "sgp" : shop_buy_pistol,
-            "sgs" : shop_buy_shotgun,
-            "sgr" : shop_buy_rifle,
-            "sbd" : bank_deposit,
-            "sbw" : bank_withdraw,
-            "sbl" : bank_take_loan,
-            "sbp" : bank_pay_loan,
-            "std" : shady_donation,
-            "stl" : hire_lawyers,
-            "stf" : fire_lawyers,
-            "stc" : new_city,
-            "sci" : casino_bingo,
-            "scb" : casino_blackjack,
-            "sch" : casino_horse_racing,
-            "scd" : casino_double_or_nothing,
-            "wg"  : inspect_gear,
-            "wi"  : inspect_warehouse,
-            "ws"  : sell_warehouse_items,
-            "wa"  : distribute_armor,
-            "ww"  : distribute_weapons,
-            "wc"  : car_money,
-            "ic"  : crew_summary,
-            "is"  : crew_skills,
-            "rp"  : recruit_peds,
-            "ri"  : intimidate_peds,
-            "rb"  : bribe_peds,
+            "cpr" : Crime.rob_pedestrian,
+            "cpc" : Crime.car_jacking,
+            "cph" : Crime.house_robbery,
+            "chb" : Crime.heist_bank,
+            "chp" : Crime.heist_prison,
+            "ca"  : Crime.hack_police,
+            "ttb" : Territory.target_block,
+            "ttc" : Territory.city_takeover,
+            "ttw" : Territory.world_takeover,
+            "trb" : Territory.retract_crew_block,
+            "trc" : Territory.retract_crew_city,
+            "trw" : Territory.retract_crew_world,
+            "tw"  : Territory.inspect_world,
+            "tcc" : Territory.view_coffer,
+            "tcd" : Territory.deposit_coffer,
+            "tcw" : Territory.withdraw_coffer,
+            "sgb" : Shopping.shop_buy_bat,
+            "sga" : Shopping.shop_buy_armor,
+            "sgp" : Shopping.shop_buy_pistol,
+            "sgs" : Shopping.shop_buy_shotgun,
+            "sgr" : Shopping.shop_buy_rifle,
+            "sbd" : Shopping.bank_deposit,
+            "sbw" : Shopping.bank_withdraw,
+            "sba" : Shopping.bank_auto_withdraw,
+            "sbl" : Shopping.bank_take_loan,
+            "sbp" : Shopping.bank_pay_loan,
+            "std" : Shopping.shady_donation,
+            "stl" : Shopping.hire_lawyers,
+            "stf" : Shopping.fire_lawyers,
+            "stc" : Shopping.new_city,
+            "sci" : Shopping.casino_bingo,
+            "scb" : Shopping.casino_blackjack,
+            "sch" : Shopping.casino_horse_racing,
+            "scd" : Shopping.casino_double_or_nothing,
+            "scw" : Shopping.casino_fortune_wheel,
+            "wg"  : Warehouse.inspect_gear,
+            "wi"  : Warehouse.inspect_warehouse,
+            "ws"  : Warehouse.sell_warehouse_items,
+            "wa"  : Warehouse.distribute_armor,
+            "ww"  : Warehouse.distribute_weapons,
+            "wc"  : Warehouse.car_money,
+            "ic"  : Crew.crew_summary,
+            "is"  : Crew.crew_skills,
+            "rp"  : Recruit.recruit_peds,
+            "ri"  : Recruit.intimidate_peds,
+            "rb"  : Recruit.bribe_peds,
+            "bw"  : Business.busy_withdraw,
+            "bi"  : Business.busy_inspect,
+            "bp"  : Business.busy_purchase,
+            "bs"  : Business.busy_sell
         })
 
     def lose(self):
-        system("cls")
-        print("There's no more Crew Members backing you")
-        print("\nThe Streets are full, but with the wrong guys")
-        print("\nTime for you to go join them yourself.")
+        answer = -1
 
-        print("\n\nAm I really not Mob Boss material?\n")
-        print("1. Give me another chance, 10 more guys, no money needed. (Play Again)")
-        print("2. Time to become a Pedestrian (Quit Game)")
+        while answer == -1:
+            system("cls")
+            print("There's no more Crew Members backing you")
+            print("\nThe Streets are full, but with the wrong guys")
+            print("\nTime for you to go join them yourself.")
 
-        answer = valid_numeric_input("\nYour response", 1, 2, 2)
+            print("\n\nAm I really not Mob Boss material?\n")
+            print("1. Give me another chance, 10 more guys, no money needed. (Play Again)")
+            print("2. Time to become a Pedestrian (Quit Game)")
+        
+            answer = input("\nYour response: ")
+            answer = (-1 if answer == '' else answer)
 
-        if answer == 1:
+        if answer == '1':
             print("\nDammit, okay I'll see what kind of strings I can pull")
             print("Do NOT mess this operation up again!!")
             self.world = World()
@@ -108,9 +123,10 @@ class CrimeGame:
 
         while not sure:
             name = input("\nWe are The ")
-            print("\nThe ", name, ", is that right?", sep='')
+            print(f"\nThe {name}, is that right?")
             print("\nPress y to confirm. Hit enter to try again")
             sure = (True if input().lower() == 'y' else False)
+            system("cls")
 
     # Main game loop
     def play(self):

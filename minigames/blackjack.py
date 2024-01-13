@@ -9,6 +9,7 @@ class BlackjackPlayer:
     def __init__(self, name="Unnamed", money=100):
         self.name = name
         self.money = money
+        self.start_money = money
         self.bet = 0
         self.busted = False
         self.hand = CardHand()
@@ -18,7 +19,6 @@ class BlackjackPlayer:
         self.wins = 0
         self.loses = 0
         self.pushes = 0
-        self.winnings = 0
 
     
     def __repr__(self): return self.hand.__repr__()
@@ -74,7 +74,7 @@ class BlackjackPlayer:
         if self.money == 0: return 0
 
         print("Please place your bet (0 to quit playing)")
-        print("Money: $", self.money, '\n', sep='')
+        print(f"Money: ${self.money}")
 
         bet = valid_numeric_input("Bet", 0, self.money, (self.money // 2))
         self.add_bet(bet); return bet
@@ -83,7 +83,7 @@ class BlackjackPlayer:
         finished = False
 
         while not finished:
-            print("\nBet: $", self.bet, sep='')
+            print(f"\nBet: ${self.bet}")
             print("Select your play\n")
             total = self.score()
 
@@ -133,14 +133,12 @@ class BlackjackPlayer:
     
     def win(self):
         winnings = (self.bet * 2)
-        print("You won $", self.bet, sep='')
+        print(f"You won ${self.bet}")
         self.money += winnings
-        self.winnings += winnings
         self.wins += 1
     
     def lose(self):
-        print("You lost $", self.bet, sep='')
-        self.winnings -= self.bet
+        print(f"You lost ${self.bet}")
         self.loses += 1
 
     def push(self):
@@ -242,7 +240,7 @@ class Blackjack:
                     "\nPushes:", ply.pushes
                 )
 
-                print("\nTotal Winnings: $", ply.winnings, '\n', sep='')
+                print(f"\nTotal Winnings: ${ply.money - ply.start_money}")
 
                 try: print("Win/Loss Ratio:", round(ply.wins / ply.loses, 2))
                 except: print("Win/Loss Ratio:", ply.wins)

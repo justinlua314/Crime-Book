@@ -16,7 +16,7 @@ def prepare_crime(world, title, max_crew):
 
 def rob_pedestrian(world):
     log = EventLog()
-    mission_crew = prepare_crime(world, "Robbing Pedestrians", 5000)
+    mission_crew = prepare_crime(world, "Robbing Pedestrians", 500)
     if len(mission_crew) == 0: return
     ply = world.player
 
@@ -115,8 +115,103 @@ menu_crime_petty = Menu(
     ]
 )
 
+def check_crew_size(world, requirement):
+    if len(world.player.crew) < requirement:
+        print(f"You need at least {requirement} Crew Members for a job like that!")
+        input_buffer()
+        return False
+    return True
+
+def confirm_heist(name, crew_count, reward, failure):
+    print(name, '\n')
+    print(f"Crew needed: {crew_count}")
+    print("Reward:", reward)
+    print("Failure:", failure)
+
+    print("\nAre you sure you want to go through with this Heist?")
+    choice = None
+
+    while choice == None:
+        try: choice = input("(y or n): ")[0].lower()
+        except: continue
+
+        if choice == 'y': return True
+        elif choice == 'n': return False
+        else: print("Invalid choice\n")
+
+def redeposit_crew(world, crew):
+    if crew == None: return
+    for id in crew: world.player.crew[id] = crew[id]
+
+def heist_bank(world):
+    confirm = check_crew_size(world, 50)
+    if not confirm: return
+
+    confirm = confirm_heist(
+        "Bank Heist", 50, "Lots of Cash and Gold",
+        "Massive retaliation from the Police and the Financial Sector"
+    )
+
+    if not confirm: return
+
+    from heists.heist_bank import HeistBank
+    target = HeistBank()
+    target.load_crew(world)
+    survived = target.start(world)
+    redeposit_crew(world, survived)
+
+def heist_prison(world):
+    confirm = check_crew_size(world, 100)
+    if not confirm: return
+
+    confirm = confirm_heist(
+        "Prison Break", 100, "Many new Crew Members",
+        "Your Crew can get locked up easily in a Prison"
+    )
+
+    if not confirm: return
+
+    from heists.heist_prison import HeistPrison
+    target = HeistPrison()
+    target.load_crew(world)
+    survived = target.start(world)
+    redeposit_crew(world, survived)
+
+menu_heist = Menu(
+    "Planning Heist", "What's the plan Boss", [
+        Option("Bank Heist", '', 'b', heist_bank),
+        Option("Prison Break", '', 'p', heist_prison)
+    ]
+)
+
+def hack_police(world):
+    ply = world.player
+    measure = ply.heat
+
+    if measure == 0:
+        print("You don't have any kind of record to wipe clean")
+        input_buffer()
+        return
+
+    from minigames.memory_injection import MemoryInjection
+
+    difficulty = 1
+
+    while difficulty < 10 and measure > 0:
+        measure //= 10
+        difficulty += 1
+    
+    game = MemoryInjection(difficulty)
+    discovered = game.play()
+
+    if discovered: ply.heat *= rand(2, 4)
+    else: ply.heat = int(ply.heat * 0.4)
+
+
 menu_crime = Menu(
     "Commit Crime", "What kind of job are we doing", [
-        Option("Petty Crime", "menu_crime_petty", 'p')
+        Option("Petty Crime", "menu_crime_petty", 'p'),
+        Option("Start Heist", "menu_heist", 'h'),
+        Option("Hack Police Computers", '', 'a', hack_police)
     ]
 )

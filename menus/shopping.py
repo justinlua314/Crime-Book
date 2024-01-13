@@ -57,6 +57,7 @@ menu_buy_gear = Menu(
 
 def bank_deposit(world): world.bank.deposit_savings(world)
 def bank_withdraw(world): world.bank.withdraw_savings(world)
+def bank_auto_withdraw(world): world.bank.change_auto_withdraw(world)
 def bank_take_loan(world): world.bank.take_loan(world)
 def bank_pay_loan(world): world.bank.pay_loan(world)
 
@@ -65,6 +66,7 @@ menu_bank = Menu(
     "The Bank", "How can we help you sir", [
         Option("Deposit Money", '', 'd', bank_deposit),
         Option("Withdraw Money", '', 'w', bank_withdraw),
+        Option("Set up Auto Withdraw", '', 'a', bank_auto_withdraw),
         Option("Request Loan", '', 'l', bank_take_loan),
         Option("Make Loan Payment", '', 'p', bank_pay_loan)
     ]
@@ -73,7 +75,7 @@ menu_bank = Menu(
 
 def shady_donation(world):
     ply = world.player
-    print("Money: $", ply.money, sep='')
+    print(f"Money: ${ply.money}")
 
     donation = valid_numeric_input(
         "How much money are we forking over", 0, ply.money, (ply.money // 2)
@@ -84,7 +86,7 @@ def shady_donation(world):
         heat_change = (donation // (ply.heat_cap // 10))
         ply.heat_cap += heat_change
 
-        print('$', donation, " donated to the feds", sep='')
+        print(f"${donation} donated to the feds")
         input_buffer()
 
 def hire_lawyers(world):
@@ -98,18 +100,16 @@ def hire_lawyers(world):
         if count == lawyers.max_count:
             print("We've already hired every Lawyer in the country!")
         else:
-            print(
-                "You can't afford any Lawyers, They're $", cost, " a pop!", 
-            sep='')
+            print(f"You can't afford any Lawyers, They're ${cost} a pop!")
 
         input_buffer()
         return
 
-    print("Cost per Lawyer: $", cost, " every ", lawyers.turns, " turns", sep='')
+    print(f"Cost per Lawyer: ${cost} ever {lawyers.turns} turns")
     print("\nLawyers on the books:", lawyers.count)
-    print("Current cost every", lawyers.turns, "turns: $", (cost * count), sep='')
+    print(f"Current cost every {lawyers.turns} turns: ${cost * count}")
 
-    print("\nMoney: $", ply.money, sep='')
+    print(f"\nMoney: ${ply.money}")
 
     hiring = valid_numeric_input(
         "\nHow many Lawyers are we hiring", 0, can_afford, 0
@@ -121,7 +121,7 @@ def hire_lawyers(world):
     cost *= hiring
     ply.money -= cost
 
-    print("\nHired ", hiring, " Lawyers for $", cost, sep='')
+    print(f"\nHired {hiring} Lawyers for ${cost}")
     input_buffer()
 
 def fire_lawyers(world):
@@ -145,9 +145,9 @@ def new_city(world):
     cost = world.city_cost
 
     if ply.money < cost:
-        print("We need at least $", cost, " to build another City", sep='')
+        print(f"We need at least ${cost} to build another City")
     else:
-        print("\nBuilding a new City will cost $", cost, sep='')
+        print(f"\nBuilding a new City will cost ${cost}")
         print("We need a name for it. Hit enter with no name to cancel")
         name = input("\nWhat will be the name of our new city: ")
 
@@ -209,12 +209,17 @@ def casino_double_or_nothing(world):
     from minigames.double_nothing import DoubleOrNothing
     casino_game(world, DoubleOrNothing)
 
+def casino_fortune_wheel(world):
+    from minigames.fortune_wheel import FortuneWheel
+    casino_game(world, FortuneWheel)
+
 menu_casino = Menu(
     "Casino", "What game would you like to play", [
-        Option("Bingo", '', 'n', casino_bingo),
+        Option("Bingo", '', 'i', casino_bingo),
         Option("Blackjack", '', 'b', casino_blackjack),
         Option("Horse Racing", '', 'h', casino_horse_racing),
-        Option("Double or Nothing", '', 'd', casino_double_or_nothing)
+        Option("Double or Nothing", '', 'd', casino_double_or_nothing),
+        Option("Wheel of Fortune", '', 'w', casino_fortune_wheel)
     ]
 )
 

@@ -8,6 +8,7 @@ from menu import valid_numeric_input, input_buffer
 class Bingo:
     def __init__(self, money=100):
         self.money = money
+        self.start_money = money
         self.bet = 0
         self.turns = 14
         self.ball_count = 28
@@ -16,7 +17,6 @@ class Bingo:
         self.board = [[0] * 5 for _ in range(5)]
 
         self.wins = 0
-        self.winnings = 0
         self.loses = 0
     
     def __repr__(self):
@@ -35,8 +35,8 @@ class Bingo:
         for row in self.board:
             for cell in row:
                 if cell =='X': print(colored("XX ", "cyan"), end='')
-                elif cell < 10: print('0', cell, ' ', sep='', end='')
-                else: print(cell, ' ', sep='', end='')
+                elif cell < 10: print(f"0{cell} ", end='')
+                else: print(f"{cell} ", end='')
                 print("  ", end='')
 
             print('\n')
@@ -73,7 +73,7 @@ class Bingo:
         pick = choice(self.balls)
         self.balls.remove(pick)
         self.mark(pick)
-        print(pick, "!\n", sep='')
+        print(f"{pick}!\n")
         print(self)
 
     def check_win(self):
@@ -138,9 +138,8 @@ class Bingo:
                     winnings = self.bet * 2
                     self.money += winnings
                     self.wins += 1
-                    self.winnings += self.bet
 
-                    print("\nYou won $", winnings, sep='')
+                    print(f"\nYou won ${winnings}")
                     input_buffer()
                     break
                 else:
@@ -150,7 +149,6 @@ class Bingo:
             
             if self.turns_left == 0:
                 print("\nUnlucky, no winnings for you")
-                self.winnings -= self.bet
                 self.loses += 1
                 input_buffer()
 
@@ -159,7 +157,7 @@ class Bingo:
 
         print("Wins:", self.wins, "\nLoses:", self.loses)
 
-        print("\nTotal Winnings: $", self.winnings, '\n', sep='')
+        print(f"\nTotal Winnings: ${self.money - self.start_money}\n")
 
         try: print("Win/Loss Ratio:", round(self.wins / self.loses, 2))
         except: print("Win/Loss Ratio:", self.wins)

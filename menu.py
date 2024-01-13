@@ -1,5 +1,6 @@
 from os import system
 from prettytable import PrettyTable
+from termcolor import colored
 
 from cheats import cheat_codes
 
@@ -32,10 +33,10 @@ def valid_numeric_input(prompt="", min_value=0, max_value=1, default=0):
 
     return choice
 
-def crew_count_input(ply, max_value=100000000):
+def crew_count_input(ply, max_value=5000, safe=True):
     crew_count = len(ply.crew)
     print("\nCrew Members:", crew_count, '\n')
-    maximum = min(crew_count - 1, max_value)
+    maximum = min(crew_count - (1 if safe else 0), max_value)
     return valid_numeric_input("How many crew members do we send", 0, maximum, maximum)
 
 
@@ -92,22 +93,23 @@ class Menu:
 
             self.print_options()
 
+            if world.cheated: print(colored("Cheated", "red"))
+
             pop = world.crew_population()
 
-            if pop > 0:
-                print("\nCrew Members: ", len(ply.crew), " (", pop, ')', sep='')
-            else:
-                print("\nCrew Members:", len(ply.crew))
+            if pop > 0: print(f"\nCrew Members: {len(ply.crew)} ({pop})")
+            else: print("\nCrew Members:", len(ply.crew))
             
             print("Heat from Police:", ply.heat, '/', ply.heat_cap)
 
             if world.lawyers.count > 0:
                 cost = world.lawyers.count * world.lawyers.cost
-                print("Lawyers: ", world.lawyers.count, " ($", cost, ')', sep='')
+                print(f"Lawyers: {world.lawyers.count} (${cost})")
 
-            print('$', world.player.money, sep='')
+            if world.bank.savings == 0: print(f"${world.player.money}")
+            else: print(f"${world.player.money} (${world.bank.savings})")
 
-            if world.bank.loan > 0: print("Loan: $", world.bank.loan, sep='')
+            if world.bank.loan > 0: print(f"Loan: ${world.bank.loan}")
 
             choice = input("\n\n" + self.choice_prompt + ": ")
             system("cls")
@@ -116,8 +118,21 @@ class Menu:
                 tokens = choice.split(' ')
 
                 if tokens[0] in shortcuts:
-                    if tokens[1].isnumeric:
-                        for _ in range(int(tokens[1]) - 1): shortcuts[tokens[0]](world)
+                    if tokens[1].isnumeric():
+                        iters = min(int(tokens[1]) - 1, 50)
+
+                        ply = world.player
+                        before_heat = world.player.heat
+
+                        for _ in range(iters):
+                            shortcuts[tokens[0]](world)
+
+                            if ply.heat >= ply.heat_cap or len(ply.crew) == 0: break
+
+                            world.think(before_heat != world.player.heat)
+                        
+                        world.think(before_heat != world.player.heat)
+
 
                     return shortcuts[tokens[0]](world)
 

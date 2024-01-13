@@ -6,17 +6,17 @@ from menu import valid_numeric_input, input_buffer
 class DoubleOrNothing:
     def __init__(self, money=100):
         self.money = money
+        self.start_money = money
         self.bet = 0
         
         self.wins = 0
         self.loses = 0
-        self.winnings = 0
         self.highest_multiplier = 1
 
     def play(self, world):
         while True:
             system("cls")
-            print("Money: $", self.money, '\n', sep='')
+            print(f"Money: ${self.money}")
             print("How much would you like to bet? (0 to stop playing)\n")
             self.bet = valid_numeric_input("Bet", 0, self.money, self.money // 2)
 
@@ -29,8 +29,8 @@ class DoubleOrNothing:
                 system("cls")
                 if multiplier > 1: print("Wager Doubled!\n")
 
-                print("Original bet: $", self.bet, sep='')
-                print("Current wager: $", self.bet * multiplier, sep='')
+                print(f"Original bet: ${self.bet}")
+                print(f"Current wager: ${self.bet * multiplier}")
                 print("\nDouble or Nothing?\n")
 
                 print("1. Double")
@@ -42,16 +42,14 @@ class DoubleOrNothing:
                     else:
                         system("cls")
                         print("The wager has been lost!")
-                        self.winnings -= self.bet
                         self.loses += 1
                         input_buffer()
                         break
                 else:
                     system("cls")
                     winnings = self.bet * multiplier
-                    print("Congrats! You are walking away with $", winnings, sep='')
+                    print(f"Congrats! You are walking away with ${winnings}")
                     self.money += winnings
-                    self.winnings += winnings
                     self.wins += 1
                     self.highest_multiplier = max(self.highest_multiplier, multiplier)
                     input_buffer()
@@ -64,5 +62,5 @@ class DoubleOrNothing:
         try: print("Win/Loss Ratio:", round(self.wins / self.loses), 2)
         except: print("Win/Loss Ratio:", self.wins)
 
-        print("\nTotal Winnings: $", self.winnings, '\n', sep='')
+        print(f"\nTotal Winnings: ${self.money - self.start_money}")
         return self.money

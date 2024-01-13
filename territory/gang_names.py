@@ -9,7 +9,13 @@ gang_names = [
     "Snakes",
     "Cobras",
     "Hunters",
-    "Hitsquad"
+    "Hitsquad",
+    "Dealers",
+    "Unholy",
+    "Menaces",
+    "Nerds",
+    "Bangers",
+    "Reapers"
 ]
 
 def random_gang_names(amount=1):

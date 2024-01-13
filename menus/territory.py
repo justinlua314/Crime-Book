@@ -29,13 +29,16 @@ def select_city(world, prompt):
 def select_block(city, prompt):
     system("cls")
     render = PrettyTable()
-    render.field_names = ["Block Number", "Gang Economy", "Crew Members"]
+    render.field_names = [
+        "Block Number", "Gang Economy", "Top Gang", "Crew Members"
+    ]
 
-    render.add_row([0, "Cancel", "NA"], divider=True)
+    render.add_row([0, "Cancel", "NA", "NA"], divider=True)
 
     for index, block in enumerate(city.blocks):
         render.add_row([
-            (index + 1), block.gang_economy(), block.crew_population()
+            (index + 1), block.gang_economy(),
+            block.controlling_gang().name, block.crew_population()
         ], divider=True)
     
     print(render)
@@ -52,6 +55,8 @@ def target_block(world):
     if city == None: return
     
     block = select_block(city, "\nWhich Block are we hitting")
+    if block == None: return
+
     block_number = -1
 
     for index, scan in enumerate(city.blocks):
@@ -63,7 +68,7 @@ def target_block(world):
     if len(crew) == 0: return
     block.add_crew_members(world, crew)
 
-    print('\n', len(crew), " Crew Members sent to ", city.name, " Block #", block_number, sep='')
+    print(f"\n{len(crew)} Crew Members sent to {city.name} Block #{block_number}")
     input_buffer()
 
 def city_takeover(world):
@@ -78,8 +83,8 @@ def city_takeover(world):
     if len(crew) == 0: return
 
     city.send_crew(world, len(crew))
-    
-    print('\n', len(crew), " Crew Members sent to take over ", city.name, sep='')
+
+    print(f"\n{len(crew)} Crew Members sent to take over {city.name}")
     input_buffer()
 
 def world_takeover(world):
@@ -92,7 +97,7 @@ def world_takeover(world):
 
     world.send_crew(len(crew))
 
-    print('\n', len(crew), " Crew Members sent to choas havoc on the World", sep='')
+    print(f"\n{len(crew)} Crew Members sent to choas havoc on the World")
     input_buffer()
 
 
@@ -145,14 +150,14 @@ menu_withdraw_crew = Menu(
 
 
 def view_coffer(world):
-    print("Gang Coffer: $", world.gang_coffer, sep='')
-    print("Money needed by your Gangs: $", world.gang_deficite(), '\n', sep='')
-    print("Money: $", world.player.money, sep='')
+    print(f"Gang Coffer: ${world.gang_coffer}")
+    print(f"Money needed by your Gangs: ${world.gang_deficite()}\n")
+    print(f"Money: ${world.player.money}")
     input_buffer()
 
 def deposit_coffer(world):
-    print("Gang Coffer: $", world.gang_coffer, sep='')
-    print("Money needed by your Gangs: $", world.gang_deficite(), '\n', sep='')
+    print(f"Gang Coffer: ${world.gang_coffer}")
+    print(f"Money needed by your Gangs: ${world.gang_deficite()}\n")
 
     ply = world.player
     donation = valid_numeric_input(
@@ -163,12 +168,12 @@ def deposit_coffer(world):
         world.gang_coffer += donation
         ply.money -= donation
 
-        print('$', donation, " donation deposited", sep='')
+        print(f"${donation} donation deposited")
         input_buffer()
 
 def withdraw_coffer(world):
-    print("Gang Coffer: $", world.gang_coffer, sep='')
-    print("Money needed by your Gangs: $", world.gang_deficite(), '\n', sep='')
+    print(f"Gang Coffer: ${world.gang_coffer}")
+    print(f"Money needed by your Gangs: ${world.gang_deficite()}")
 
     ply = world.player
     withdraw = valid_numeric_input(
@@ -180,12 +185,12 @@ def withdraw_coffer(world):
         ply.money += withdraw
         world.gang_coffer -= withdraw
 
-        print('$', withdraw, " withdrawn", sep='')
+        print(f"${withdraw} withdrawn")
         input_buffer()
 
 def set_gang_cap(world):
     print("If a gang controlled by you has more money than the cap, they will donate the excess funds back to your money coffer.")
-    print("\nGang Cap: $", world.gang_money_cap, sep='')
+    print(f"\nGang Cap: ${world.gang_money_cap}")
 
     new_cap = valid_numeric_input(
         "What would you like the new cap to be", 0, 100000, 5000
@@ -195,7 +200,7 @@ def set_gang_cap(world):
 
     world.gang_money_cap = new_cap
 
-    print("New gang money cap is $", world.gang_money_cap, sep='')
+    print(f"New gang money cap is ${world.gang_money_cap}")
     input_buffer()
 
 
@@ -231,7 +236,7 @@ def inspect_world(world):
 
 
 menu_territory = Menu(
-    "Manage Territory", "Placeholder", [
+    "Manage Territory", "What's the plan Boss", [
         Option("Control Territories", "menu_strategy", 't'),
         Option("Retract Crew Members", "menu_withdraw_crew", 'r'),
         Option("Inspect World Map", '', 'w', inspect_world),

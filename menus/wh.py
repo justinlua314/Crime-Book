@@ -34,7 +34,7 @@ def sell_warehouse_items(world): world.warehouse.sell_items(world)
 def car_money(world):
     print("Car Shop\n")
     shop = world.car_shop
-    print("Cars in car shop: ", shop.car_count(), sep='')
+    print(f"Cars in car shop: {shop.car_count()}")
     payment = shop.money
 
     if payment == 0:
@@ -45,7 +45,7 @@ def car_money(world):
     else:
         shop.money = 0
         world.player.money += payment
-        print('$', payment, " paid out by the Car Shop", sep='')
+        print(f"${payment} paid out by the Car Shop")
 
     input_buffer()
 

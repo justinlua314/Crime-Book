@@ -24,6 +24,8 @@ class EventLog:
         return message
     
     def print_events(self):
+        if len(self.events) == 0: return
+
         print("\nEvent Log:\n")
         render = PrettyTable()
         render.field_names = ["Event", "Count"]
@@ -49,3 +51,5 @@ class EventLog:
     def log(self, id="", description="", count=1):
         if id in self.events.keys(): self.events[id].log(count)
         else: self.events[id] = Event(id, description, count)
+    
+    def reset(self): self.events = {}

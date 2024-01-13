@@ -3,9 +3,9 @@ from menu import input_buffer
 class Lawyers:
     def __init__(self):
         self.count = 0
-        self.max_count = 1000
-        self.cost = 500
-        self.effect = 5
+        self.max_count = 500
+        self.cost = 100
+        self.effect = 1
         self.turns = 10
         self.turn_counter = 0
     

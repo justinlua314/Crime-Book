@@ -1,5 +1,7 @@
 from copy import deepcopy
 from random import sample
+from time import sleep
+from os import system
 
 from random import randint as rand
 
@@ -113,29 +115,22 @@ class Player:
         self.vests = int(self.vests * 0.1)
         for weapon_id in self.weapons: self.weapons[weapon_id] //= rand(2, 8)
 
-        '''
-        limit = self.money // 8
-        money_siezed = rand(limit, max(self.money - (len(self.crew) * 100), limit))
-        '''
-
         money_siezed = int(self.money * ((8 + rand(-1, 1)) / 10))
         
         ply = world.player
 
         ply.heat_cap //= 4
 
-        '''
-        lower = len(ply.crew) // 16
-        upper = len(ply.crew) // 4
-        crew_siezed = sample(list(ply.crew.keys()), rand(lower, upper))
-        '''
+        if ply.heat_cap < 10: siezed = len(ply.crew)
+        else: siezed = max(len(ply.crew) // rand(2, 4), 1)
 
-        crew_siezed = sample(list(ply.crew.keys()), max(len(ply.crew) // rand(2, 4), 1))
+        crew_siezed = sample(list(ply.crew.keys()), siezed)
 
         for id in crew_siezed: ply.crew.pop(id)
 
+        system("cls")
         print("You got busted by the police!\n")
-        print("Money Siezed: $", money_siezed, sep='')
+        print(f"Money Siezed: ${money_siezed}")
         print("Crew Siezed:", len(crew_siezed))
 
         if len(items_siezed) > 0: print("\nItems Siezed")
@@ -145,6 +140,7 @@ class Player:
 
         print("\nMake some government trades to keep the cops off your case")
 
+        sleep(3)
         input_buffer()
         
 

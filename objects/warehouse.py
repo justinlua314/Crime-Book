@@ -85,7 +85,7 @@ class Warehouse:
         world.player.money += earnings
 
         self.items.clear()
-        print("\nYou earned $", earnings, " from that sale", sep='')
+        print(f"\nYou earned ${earnings} from that sale")
         print("\nYour Warehouse is now empty")
         input_buffer()
     

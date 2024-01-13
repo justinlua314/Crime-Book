@@ -27,7 +27,7 @@ def crew_summary(world):
     for wep, data in buckets.items():
         render.add_row([wep, data[0], data[1], data[2]], divider=True)
 
-    print('\n', render, sep='')
+    print(f"\n{render}")
     input_buffer()
 
 def crew_skills(world): # Unfinished
@@ -53,7 +53,7 @@ def crew_skills(world): # Unfinished
     for wep_id, data in buckets.items():
         average_data[wep_id] = []
 
-        for skill in range(1, len(data)):
+        for index, skill in enumerate(data[1:]):
             average_data[wep_id].append(skill // data[0])
 
     render = PrettyTable()

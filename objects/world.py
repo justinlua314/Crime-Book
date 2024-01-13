@@ -3,10 +3,11 @@ from random import randint as rand
 from territory.gang_names import random_gang_names
 from objects.player import Player
 from objects.weapons import crime_weapons
-from objects.warehouse import Warehouse, Item
+from objects.warehouse import Warehouse
 from objects.car_shop import CarShop
 from objects.lawyers import Lawyers
 from objects.bank import Bank
+from objects.business import BusinessManager
 
 from territory.city import City
 
@@ -29,6 +30,7 @@ class World:
         self.car_shop = CarShop()
 
         self.bank = Bank()
+        self.business = BusinessManager()
 
         self.cities = {} # city_name : City
         self.city_cost = 500000
@@ -87,4 +89,5 @@ class World:
         self.player.think(self, crime_commited)
         self.car_shop.think()
         self.bank.think(self)
+        self.business.think(self)
         self.lawyers.think(self)
