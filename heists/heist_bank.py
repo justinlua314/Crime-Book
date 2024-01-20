@@ -32,15 +32,19 @@ class HeistBank(Heist):
                 "They found out about your loan! They added a few zeros alright..."
             )
 
-            bank.original_loan *= 20
-            bank.loan = min(bank.loan * 20, bank.original_loan * 19)
+            if bank.original_loan < 250000:
+                bank.original_loan = 250000
+                bank.loan = max(bank.loan, 237500)
+            else:
+                bank.original_loan *= 4
+                bank.loan = min(bank.loan * 4, bank.original_loan * 19)
         else:
             self.tprint(
                 "Aww man they signed us in a loan contract! And didn't even fork over the money. Is that even legal?"
             )
 
-            bank.original_loan = 2500000
-            bank.loan = 2500000
+            bank.original_loan = 250000
+            bank.loan = 250000
         
         print("Now the cops are all over us and we owe the Bank in spades. What a bummer")
         world.player.heat = max(world.player.heat // 100, 20) ** 4

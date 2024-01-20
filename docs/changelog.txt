@@ -1,3 +1,26 @@
+Version 0.3
+
+Added new Businesses
+    Scrapyard
+    Car Showroom
+
+Added descriptions to Businesses in the Business > Purchase menu
+
+Added ability to buy food for crew members in Shopping menu
+    Food Rations heal crew members to max health
+
+Limited Bank loan maximums to prevent unpayable loans
+Fixed glitch where savings account was silently capped at $20000000
+Fixed Players gang name not appearing properly in territory menu
+Input buffer gets cleared in between turns to prevent flashing screen when game is laggy + use of macros + holding enter
+Large performance optimizations
+
+
+
+
+
+
+
 Version 0.2
 
 Added Heists

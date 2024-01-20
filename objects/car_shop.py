@@ -39,7 +39,7 @@ class CarShop(Warehouse):
     def remove_item(self, item_id, quality_id, amount):
         self.remove_car(item_id, quality_id, amount)
 
-    def sell_items(self):
+    def sell_items(self, world):
         cars_to_sell = rand(0, 4)
         limit = 20
 
@@ -59,6 +59,7 @@ class CarShop(Warehouse):
                             self.money += cost
                             cars_to_sell -= 1
                             car.count -= 1
+                            world.stats.inc_stat("cars_sold")
 
                             if car.count == 0:
                                 if index in trash: trash[index].append(quality)
@@ -70,6 +71,6 @@ class CarShop(Warehouse):
             limit -= 1
             if dead_market or limit == 0: break
 
-    def think(self):
+    def think(self, world):
         self.economy += rand(100, 2000)
-        if rand(1, 3) != 3: self.sell_items()
+        if rand(1, 3) != 3: self.sell_items(world)

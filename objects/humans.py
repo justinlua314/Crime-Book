@@ -1,6 +1,8 @@
 from math import floor
 from copy import deepcopy
 
+from functools import lru_cache
+
 from random import randint as rand
 
 level_costs = []
@@ -72,6 +74,7 @@ class Human:
 
         return rand(1, (x + y)) <= x
 
+    @lru_cache(maxsize=None)
     def power_level(self):
         power = (0 if self.weapon == None else self.weapon.power)
         skill = self.weapon_skill()[0]
@@ -178,19 +181,21 @@ class CrewMember(Human):
     # If player Bool is False, dead crew members won't be deleted automatically
     # Hack to make heists possible
     def fight(self, target, world, log, player=True):
+        s_power = self.power_level()
+        s_wepskill = self.weapon_skill_name()
+        t_power = target.power_level()
+        t_wepskill = target.weapon_skill_name()
+
         while self.alive() and target.alive():
-            s_power = self.power_level()
             self.use_weapon()
 
             if self.hit_roll(target):
                 target.damage(s_power)
-                self.inc_stat(self.weapon_skill_name())
+                self.inc_stat(s_wepskill)
                 self.inc_stat("accuracy")
             else: target.inc_stat("dodging")
 
             if target.health < 1: break
-
-            t_power = target.power_level()
             target.use_weapon()
 
             # Start skipping turns when they are low hp to balance fighting peds
@@ -199,14 +204,13 @@ class CrewMember(Human):
 
             if target.hit_roll(self):
                 self.damage(t_power)
-                target.inc_stat(target.weapon_skill_name())
+                target.inc_stat(t_wepskill)
                 target.inc_stat("accuracy")
             else: self.inc_stat("dodging")
 
         ply = world.player
 
         if self.alive():
-#            log.log("crew_survived", "Crew members survived fight")
             log.log("money_looted", "Money Looted", target.money)
             ply.money += target.money
 
@@ -233,6 +237,7 @@ class CrewMember(Human):
             kill_id = ("crew_killed_by_" + target.type.lower())
             kill_desc = ("Crew killed by " + target.type)
             log.log(kill_id, kill_desc)
+            world.stats.inc_stat("crew_died")
             if player: ply.crew.pop(id(self))
 
     def recruit(self, target, world, log):
@@ -248,7 +253,7 @@ class CrewMember(Human):
             
             if rand(1, 5) == 5:
                 log.log("ped_recruited", "Pedestrians recruited")
-                ply.give_crew_member(target.get_recruited(world))
+                ply.give_crew_member(target.get_recruited(world), world)
     
     def intimidate(self, target, world, log):
         ply = world.player
@@ -261,14 +266,14 @@ class CrewMember(Human):
 
             if t_power > (s_power * 2):
                 log.log("ped_recruited", "Pedestrians recruited")
-                ply.give_crew_member(target.get_recruited(world))
+                ply.give_crew_member(target.get_recruited(world), world)
             elif t_power > s_power:
                 log.log("ped_recruited", "Pedestrians recruited")
-                ply.give_crew_member(target.get_recruited(world))
+                ply.give_crew_member(target.get_recruited(world), world)
             else:
                 if rand(1, 10) == 8:
                     log.log("ped_recruited", "Pedestrians recruited")
-                    ply.give_crew_member(target.get_recruited(world))
+                    ply.give_crew_member(target.get_recruited(world), world)
                 elif rand(1, 10) == 5: self.fight(target, world, log)
     
     def bribe(self, target, budget, world, log):
@@ -277,7 +282,7 @@ class CrewMember(Human):
         if target.type == "Cop":
             if budget > 100 and rand(1, 100) <= (budget // 100):
                 log.log("cop_recruited", "Cops recruited")
-                ply.give_crew_member(target.get_recruited(world))
+                ply.give_crew_member(target.get_recruited(world), world)
                 return 0
             else:
                 self.fight(target, world, log)
@@ -287,7 +292,7 @@ class CrewMember(Human):
         else:
             if rand(1, budget) > (target.money * 2):
                 log.log("ped_recruited", "Pedestrians recruited")
-                ply.give_crew_member(target.get_recruited(world))
+                ply.give_crew_member(target.get_recruited(world), world)
                 return 0
             else:
                 if target.power_level() > self.power_level() and rand(1, 200) == 50:

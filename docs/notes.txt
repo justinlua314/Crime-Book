@@ -5,46 +5,7 @@ Adding Menu option
         Example: menus.crime.py
 
 
-
-
-Heists
-    Should require more significant man power than petty crimes
-    Each Heist gives player unique rewards other than just money or random items
-    There's also a unique fail condition for each
-
-    Heist                   Crew Count      Reward              Fail
-    Bank                    50              Money + Gold Bars   savings = 0, heat++, give player loan
-    Prison                  100             Crew Members        Lose 90% of crew members
-    Car Museum              200             Great Cars          All vehicles taken, lots of heat
-    Police Station          500             Heat = 0            Heat cap // 2 then heat significantly raised
-    Military Base           800             Weapons galore      Same as Police Station but worse
-    Nuclear Power Plant     1000            The Nuke            Lose game
-
-
-    Cannot send more or less crew members, would be too easy
-    Grabs best Crew Members for job
-
-    When heist is ran, player watches situation play out
-
-    Crew members face different challenges in a scripted gauntlet
-
-    If all crew members die before gauntlet is over, player loses
-
-
-
 TODO
-
-Business ideas
-    Scrap Yard
-        Quickly scraps cars for cash at a bad rate
-        Worst quality cars first
-
-    Car Showroom
-        Slowly sells cars at good rate
-        Best quality cars first
-
-
-Add stat collection by 0.6
 
 Add game saving by 0.7
 

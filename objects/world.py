@@ -8,11 +8,14 @@ from objects.car_shop import CarShop
 from objects.lawyers import Lawyers
 from objects.bank import Bank
 from objects.business import BusinessManager
+from objects.stats import StatCounter
 
 from territory.city import City
 
 class World:
     def __init__(self):
+        self.stats = StatCounter()
+
         gangs_per_block = 3
         self.gang_names = random_gang_names(gangs_per_block)
 
@@ -84,10 +87,35 @@ class World:
         return sum([c.crew_population() for c in self.cities.values()])
 
 
+    def net_worth(self):
+        ply = self.player
+        net = ply.money + self.gang_coffer - self.gang_deficite()
+
+        for member in ply.crew.values():
+            wep_value = (0 if member.weapon == None else member.weapon.price)
+            net += wep_value
+
+        for qualities in self.warehouse.items.values():
+            for item in qualities.values():
+                net += item.get_total_value()
+        
+        for qualities in self.car_shop.cars.values():
+            for car in qualities.values():
+                net += car.get_total_value()
+        
+        net += self.bank.savings - self.bank.loan
+
+        for loc_id, location in self.business.locations.items():
+            value = self.business.location_ids[loc_id][1]
+            net += (value * location.count)
+        
+        return net
+
     def think(self, crime_commited):
         for city in self.cities.values(): city.think(self)
         self.player.think(self, crime_commited)
-        self.car_shop.think()
+        self.car_shop.think(self)
         self.bank.think(self)
         self.business.think(self)
         self.lawyers.think(self)
+        self.stats.inc_stat("turns_played")

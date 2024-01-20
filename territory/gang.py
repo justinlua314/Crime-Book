@@ -8,7 +8,7 @@ class Gang:
         self.name = name
         self.money = rand(100, 1000)
         self.crew = {} # Criminal_id : Criminal
-        self.crew_cap = 500
+        self.crew_cap = 200
         self.turns_until_backup = rand(5, 20)
         self.ai = True
 
@@ -37,7 +37,7 @@ class Gang:
         count = len(self.crew)
         if count == 0: return 0
 
-        total = sum([member.power_level() for member in self.crew.values()])
+        total = sum(member.power_level() for member in self.crew.values())
         return (total // count)
 
     def gang_health(self): return sum([member.health for member in self.crew.values()])

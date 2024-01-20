@@ -30,7 +30,44 @@ def crew_summary(world):
     print(f"\n{render}")
     input_buffer()
 
-def crew_skills(world): # Unfinished
+
+def print_stats(world, group):
+    world.stats.refresh_stats(world)
+    render = PrettyTable()
+    render.field_names = ["Statistic", "Value"]
+
+    for stat in world.stats.data[group].values():
+        value = stat.count
+        if stat.money: value = (f"${value}")
+
+        render.add_row([stat.description, value], divider=True)
+    
+    print(render)
+    input_buffer()
+
+def stats_general(world): print_stats(world, "General")
+def stats_crime(world): print_stats(world, "Crime")
+def stats_shopping(world): print_stats(world, "Shopping")
+def stats_banking(world): print_stats(world, "Banking / Government")
+def stats_casino(world): print_stats(world, "Casino")
+def stats_territories(world): print_stats(world, "Territories")
+def stats_business(world): print_stats(world, "Business")
+def stats_export(world): world.stats.export_stats(world)
+
+menu_stats = Menu(
+    "Game Stats", "Select stat category", [
+        Option("General", '', 'g', stats_general),
+        Option("Crime", '', 'c', stats_crime),
+        Option("Shopping", '', 's', stats_shopping),
+        Option("Banking / Government", '', 'b', stats_banking),
+        Option("Casino", '', 'a', stats_casino),
+        Option("Territories", '', 't', stats_territories),
+        Option("Business", '', 'u', stats_business),
+        Option("Export stats to txt file", '', 'e', stats_export)
+    ]
+)
+
+def crew_skills(world):
     ply = world.player
     buckets = {} # weapon_name : [member_count, average_stats...]
 
@@ -72,6 +109,7 @@ def crew_skills(world): # Unfinished
 menu_crew = Menu(
     "Inspect and Manage Crew", "What would you like to know", [
         Option("Crew Summary", '', 'c', crew_summary),
-        Option("Average Crew Skills", '', 's', crew_skills)
+        Option("Game Statistics", "menu_stats", 's'),
+        Option("Average Crew Skills", '', 'k', crew_skills)
     ]
 )

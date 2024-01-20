@@ -83,6 +83,7 @@ class FortuneWheel:
 
             if self.bet == 0: break
             self.money -= self.bet
+            world.stats.max_stat("largest_bet", self.bet)
 
             self.shuffle()
             mult = self.spin()
@@ -90,11 +91,15 @@ class FortuneWheel:
             if mult == 0:
                 print("Too bad, better luck on the next spin")
                 self.losses += 1
+                world.stats.max_stat("biggest_loss", self.bet)
             else:
                 winnings = (self.bet * mult)
                 print(f"Congrats! You won ${winnings} on a x{mult} multiplier!")
                 self.money += winnings
                 self.wins += 1
+                world.stats.max_stat("largest_fortune", mult)
+                world.stats.max_stat("biggest_win", winnings)
+                world.stats.inc_stat("wheel_won")
             
             world.think(False)
             input_buffer()

@@ -19,11 +19,24 @@ class Player:
         self.heat_timer = 0
         self.heat_momentum = 0
 
-    def give_crew_member(self, member): self.crew[id(member)] = member
+    def get_hungry_crew(self):
+        return sum(1 for member in self.crew.values() if member.health < 100)
+
+    def feed_crew(self, amount=1):
+        for member in self.crew.values():
+            if member.health < 100:
+                member.health = 100
+                amount -= 1
+
+                if amount == 0: break
+
+    def give_crew_member(self, member, world):
+        self.crew[id(member)] = member
+        world.stats.inc_stat("crew_recruited")
 
     def give_random_crew_members(self, world, amount=1):
         for _ in range(amount):
-            self.give_crew_member(CrewMember(world))
+            self.give_crew_member(CrewMember(world), world)
     
     def give_weapon(self, weapon_id="pistol", amount=1):
         if weapon_id in self.weapons.keys():
@@ -124,14 +137,17 @@ class Player:
         if ply.heat_cap < 10: siezed = len(ply.crew)
         else: siezed = max(len(ply.crew) // rand(2, 4), 1)
 
-        crew_siezed = sample(list(ply.crew.keys()), siezed)
-
-        for id in crew_siezed: ply.crew.pop(id)
+        if siezed >= len(ply.crew):
+            siezed = len(ply.crew)
+            ply.crew = {}
+        else:
+            crew_siezed = sample(list(ply.crew.keys()), siezed)
+            for id in crew_siezed: ply.crew.pop(id)
 
         system("cls")
         print("You got busted by the police!\n")
         print(f"Money Siezed: ${money_siezed}")
-        print("Crew Siezed:", len(crew_siezed))
+        print("Crew Siezed:", siezed)
 
         if len(items_siezed) > 0: print("\nItems Siezed")
 
@@ -157,6 +173,6 @@ class Player:
                 self.heat_momentum = min(self.heat_momentum + 1, 5)
             
             if self.heat_momentum == 5:
-                self.heat_cap = max(self.heat_cap - 1, 500)
+                self.heat_cap = max(self.heat_cap - 1, 100)
         
         if self.heat >= self.heat_cap: self.busted(world)

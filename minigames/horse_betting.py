@@ -118,16 +118,20 @@ class HorseBetting:
         self.money -= bet
         self.bet_money = bet
 
-    def finalize_game(self, winner):
+    def finalize_game(self, winner, world):
         if self.bet_horse == winner:
             mult = self.odds[len(self.odds) - winner - 1]
             winnings = self.bet_money * mult
+            world.stats.max_stat("biggest_win", winnings)
+            world.stats.max_stat("horse_high", mult)
+            world.stats.inc_stat("horse_won")
 
             print(f"\nCongrats! You won ${winnings}")
             self.money += winnings
             self.wins += 1
         else:
             print("\nYou lose, better luck next time!")
+            world.stats.max_stat("biggest_loss", self.bet_money)
             self.loses += 1
         
         input_buffer()
@@ -159,7 +163,7 @@ class HorseBetting:
                 self.draw_race()
                 sleep(0.05)
             
-            self.finalize_game(winner)
+            self.finalize_game(winner, world)
             world.think(False)
 
             if self.money == 0: break

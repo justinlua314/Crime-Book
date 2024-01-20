@@ -16,7 +16,7 @@ def valid_numeric_input(prompt="", min_value=0, max_value=1, default=0):
     choice = None
 
     while choice == None:
-        choice = input(prompt + " (Default=" + str(default) + ") (Max=" + str(max_value) + "): ")
+        choice = input(f"{prompt} (Default={default}) (Max={max_value}): ")
 
         if choice == '': return default
 
@@ -28,7 +28,7 @@ def valid_numeric_input(prompt="", min_value=0, max_value=1, default=0):
         choice = int(choice)
 
         if choice < min_value or choice > max_value:
-            print("Choice must be between", min_value, "and", max_value, '\n')
+            print(f"Choice must be between {min_value} and {max_value}\n")
             choice = None
 
     return choice
@@ -38,6 +38,15 @@ def crew_count_input(ply, max_value=5000, safe=True):
     print("\nCrew Members:", crew_count, '\n')
     maximum = min(crew_count - (1 if safe else 0), max_value)
     return valid_numeric_input("How many crew members do we send", 0, maximum, maximum)
+
+def flush_input():
+        try:
+            import sys, termios
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+        except ImportError:
+            import msvcrt
+            while msvcrt.kbhit():
+                msvcrt.getch()
 
 
 
@@ -86,11 +95,10 @@ class Menu:
     def prompt(self, world, shortcuts):
         valid_choices = [option.select for option in self.options]
         choice = None
+        ply = world.player
 
         while choice not in valid_choices:
             system("cls")
-            ply = world.player
-
             self.print_options()
 
             if world.cheated: print(colored("Cheated", "red"))
@@ -126,8 +134,10 @@ class Menu:
 
                         for _ in range(iters):
                             shortcuts[tokens[0]](world)
+                            flush_input()
 
-                            if ply.heat >= ply.heat_cap or len(ply.crew) == 0: break
+                            if ply.heat >= ply.heat_cap or len(ply.crew) == 0:
+                                break
 
                             world.think(before_heat != world.player.heat)
                         
@@ -175,4 +185,5 @@ class MenuManager:
             self.active_menu = self.main_menu
             return True, True
         
+        flush_input()
         return True, False

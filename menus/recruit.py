@@ -74,9 +74,7 @@ def recruit_campaign(world, strategy=0):
     money_returned = 0
 
     for id in crew_members:
-        if rand(1, 80) == 10: target = Cop(world)
-        else: target = Ped(world)
-
+        target = (Cop(world) if rand(1, 80) == 10 else Ped(world))
         member = ply.crew[id]
 
         match(strategy):

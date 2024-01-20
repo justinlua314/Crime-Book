@@ -70,16 +70,17 @@ class BlackjackPlayer:
         self.money -= value
         self.bet += value
 
-    def get_bet(self):
+    def get_bet(self, world):
         if self.money == 0: return 0
 
         print("Please place your bet (0 to quit playing)")
         print(f"Money: ${self.money}")
 
         bet = valid_numeric_input("Bet", 0, self.money, (self.money // 2))
+        world.stats.max_stat("largest_bet", bet)
         self.add_bet(bet); return bet
 
-    def turn(self, deck=CardDeck(), inspect=None):
+    def turn(self, deck=CardDeck(), inspect=None, world=None):
         finished = False
 
         while not finished:
@@ -112,6 +113,7 @@ class BlackjackPlayer:
 
             if pick == 1: # Hit
                 self.hand.draw(deck)
+                world.stats.inc_stat("blackjack_hits")
 
                 if self.score() > 21:
                     print("Busted!")
@@ -122,6 +124,7 @@ class BlackjackPlayer:
                 self.add_bet(self.bet)
                 print("Bet increased to", self.bet)
                 self.hand.draw(deck)
+                world.stats.inc_stat("double_downs")
 
                 if self.score() > 21:
                     print("Busted!")
@@ -131,14 +134,17 @@ class BlackjackPlayer:
 
             inspect()
     
-    def win(self):
+    def win(self, world):
         winnings = (self.bet * 2)
         print(f"You won ${self.bet}")
         self.money += winnings
         self.wins += 1
+        world.stats.max_stat("biggest_win", winnings)
+        world.stats.inc_stat("blackjack_won")
     
-    def lose(self):
+    def lose(self, world):
         print(f"You lost ${self.bet}")
+        world.stats.max_stat("biggest_loss", self.bet)
         self.loses += 1
 
     def push(self):
@@ -210,25 +216,25 @@ class Blackjack:
         system("cls")
         print(table)
     
-    def results(self):
+    def results(self, world):
         dealer_score = self.dealer.score()
         player_score = self.player.score()
 
         if (dealer_score > 21 and player_score < 22):
-            self.player.win()
+            self.player.win(world)
         elif not self.player.busted:
             if player_score > dealer_score:
-                self.player.win()
+                self.player.win(world)
             elif player_score == dealer_score:
                 self.player.push()
             else:
-                self.player.lose()
-        else: self.player.lose()
+                self.player.lose(world)
+        else: self.player.lose(world)
     
     def play(self, world):
         while True:
             self.new_round()
-            status = self.player.get_bet()
+            status = self.player.get_bet(world)
 
             if status == 0:
                 system("cls")
@@ -248,11 +254,11 @@ class Blackjack:
                 return ply.money
 
             self.inspect_table()
-            self.player.turn(self.deck, self.inspect_table)
+            self.player.turn(self.deck, self.inspect_table, world)
             self.dealer.turn(self.deck, self.player, self.inspect_table)
 
             sleep(1)
-            self.results()
+            self.results(world)
 
             print("\n\nNew Hand!\n\n")
             world.think(False)

@@ -16,12 +16,14 @@ class DoubleOrNothing:
     def play(self, world):
         while True:
             system("cls")
+            if self.money == 0: break
             print(f"Money: ${self.money}")
             print("How much would you like to bet? (0 to stop playing)\n")
             self.bet = valid_numeric_input("Bet", 0, self.money, self.money // 2)
 
             if self.bet == 0: break
 
+            world.stats.max_stat("largest_bet", self.bet)
             self.money -= self.bet
             multiplier = 1
 
@@ -43,6 +45,7 @@ class DoubleOrNothing:
                         system("cls")
                         print("The wager has been lost!")
                         self.loses += 1
+                        world.stats.max_stat("biggest_loss", self.bet)
                         input_buffer()
                         break
                 else:
@@ -52,6 +55,9 @@ class DoubleOrNothing:
                     self.money += winnings
                     self.wins += 1
                     self.highest_multiplier = max(self.highest_multiplier, multiplier)
+                    world.stats.max_stat("biggest_win", winnings)
+                    world.stats.max_stat("double_high", multiplier)
+                    world.stats.inc_stat("double_won")
                     input_buffer()
                     break
             

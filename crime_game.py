@@ -34,6 +34,7 @@ class CrimeGame:
             "menu_casino"           : Shopping.menu_casino,
             "menu_warehouse"        : Warehouse.menu_warehouse,
             "menu_crew"             : Crew.menu_crew,
+            "menu_stats"            : Crew.menu_stats,
             "menu_recruit"          : Recruit.menu_recruit,
             "menu_business"         : Business.menu_business
         },
@@ -60,6 +61,7 @@ class CrimeGame:
             "sgp" : Shopping.shop_buy_pistol,
             "sgs" : Shopping.shop_buy_shotgun,
             "sgr" : Shopping.shop_buy_rifle,
+            "sf"  : Shopping.buy_food,
             "sbd" : Shopping.bank_deposit,
             "sbw" : Shopping.bank_withdraw,
             "sba" : Shopping.bank_auto_withdraw,
@@ -81,7 +83,15 @@ class CrimeGame:
             "ww"  : Warehouse.distribute_weapons,
             "wc"  : Warehouse.car_money,
             "ic"  : Crew.crew_summary,
-            "is"  : Crew.crew_skills,
+            "isg" : Crew.stats_general,
+            "isc" : Crew.stats_crime,
+            "iss" : Crew.stats_shopping,
+            "isb" : Crew.stats_banking,
+            "isa" : Crew.stats_casino,
+            "ist" : Crew.stats_territories,
+            "isu" : Crew.stats_business,
+            "ise" : Crew.stats_export,
+            "ik"  : Crew.crew_skills,
             "rp"  : Recruit.recruit_peds,
             "ri"  : Recruit.intimidate_peds,
             "rb"  : Recruit.bribe_peds,
@@ -127,10 +137,20 @@ class CrimeGame:
             print("\nPress y to confirm. Hit enter to try again")
             sure = (True if input().lower() == 'y' else False)
             system("cls")
+        
+        return name
 
     # Main game loop
     def play(self):
-        self.world.player_gang_name = self.get_gang_name()
+        self.world.player_gang_name = ("The " + self.get_gang_name())
+
+        for city in self.world.cities.values():
+            for block in city.blocks:
+                for gang in block.gangs:
+                    if not gang.ai:
+                        gang.name = self.world.player_gang_name
+                        break
+
         playing = True
 
         while playing:

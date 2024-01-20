@@ -30,13 +30,18 @@ def purchase(world, cost, qty):
 def shop_buy_armor(world):
     qty = purchase(world, 100, shop_purchase_qty(world, 100))
     world.player.vests += qty
+    world.stats.add_stat("gear_money", (qty * 100))
+    world.stats.add_stat("vests_purchased", qty)
 
 shop_weapons = ["bat", "pistol", "shotgun", "rifle"]
 
 def shop_buy_weapon(world, index):
     wep = world.weapons.lookup_weapon(shop_weapons[index])
+    before_money = world.player.money
     qty = purchase(world, wep.price, shop_purchase_qty(world, wep.price))
     world.player.give_weapon(wep.id, qty)
+    world.stats.add_stat("gear_money", (before_money - world.player.money))
+    world.stats.add_stat(f"{shop_weapons[index]}s_purchased", qty)
 
 def shop_buy_bat(world): shop_buy_weapon(world, 0)
 def shop_buy_pistol(world): shop_buy_weapon(world, 1)
@@ -73,6 +78,37 @@ menu_bank = Menu(
 )
 
 
+def buy_food(world):
+    ply = world.player
+    hungry = ply.get_hungry_crew()
+
+    if hungry == 0:
+        print("None of your crew members are hungry")
+        input_buffer()
+        return
+
+    if ply.money < 50:
+        print("You can't afford to feed any of your Crew Members :(")
+        input_buffer()
+        return
+
+    print(f"Money: ${ply.money}")
+    print("Food Ration: $50")
+    print(f"Hungry Crew Members: {hungry}")
+
+    maximum = min((ply.money // 50), hungry)
+    qty = valid_numeric_input("\nHow many meals are we buying?", 0, maximum, maximum)
+    if qty == 0: return
+
+    price = qty * 50
+    ply.money -= price
+    ply.feed_crew(qty)
+    world.stats.add_stat("rations_eaten", qty)
+
+    print(f"{qty} Crew Members fed for ${price}")
+    input_buffer()
+
+
 def shady_donation(world):
     ply = world.player
     print(f"Money: ${ply.money}")
@@ -80,14 +116,16 @@ def shady_donation(world):
     donation = valid_numeric_input(
         "How much money are we forking over", 0, ply.money, (ply.money // 2)
     )
+    if donation == 0: return
 
-    if donation > 0:
-        ply.money -= donation
-        heat_change = (donation // (ply.heat_cap // 10))
-        ply.heat_cap += heat_change
+    ply.money -= donation
+    heat_change = (donation // (ply.heat_cap // 10))
+    ply.heat_cap += heat_change
+    world.stats.add_stat("fed_money", donation)
+    world.stats.max_stat("heat_cap_high", ply.heat_cap)
 
-        print(f"${donation} donated to the feds")
-        input_buffer()
+    print(f"${donation} donated to the feds")
+    input_buffer()
 
 def hire_lawyers(world):
     ply = world.player
@@ -153,6 +191,7 @@ def new_city(world):
 
         world.add_city(name)
         world.city_cost *= 2
+        world.stats.inc_stat("cities_purchased")
 
         print("\nPleasure doing business with you")
         print("We will have", name, "built immediately")
@@ -190,7 +229,10 @@ def casino_game(world, game_obj):
 
     system("cls")
     game = game_obj(pot)
-    ply.money += game.play(world)
+    after_pot = game.play(world)
+    ply.money += after_pot
+    world.stats.add_stat("winnings", max(after_pot - pot, 0))
+
     leave_casino()
 
 def casino_bingo(world):
@@ -226,6 +268,7 @@ menu_casino = Menu(
 menu_shopping = Menu(
     "Shopping and Commerce", "Where would you like to go", [
         Option("Buy Gear", "menu_buy_gear", 'g'),
+        Option("Buy Food", '', 'f', buy_food),
         Option("Visit Bank", "menu_bank", 'b'),
         Option("Government Trades", "menu_gov_trade", 't'),
         Option("Visit Casino", "menu_casino", 'c'),

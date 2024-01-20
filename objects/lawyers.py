@@ -13,7 +13,9 @@ class Lawyers:
         if self.count == 0: return
 
         ply = world.player
-        ply.heat = max((ply.heat - (self.effect * self.count)), 0)
+        reduction = (self.effect * self.count)
+        ply.heat = max((ply.heat - reduction), 0)
+        world.stats.add_stat("lawyer_heat", reduction)
 
         self.turn_counter += 1
 

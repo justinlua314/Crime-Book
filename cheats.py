@@ -17,8 +17,21 @@ def cheat_time_warp(world):
     print("Warping 50 turns into the future")
     for _ in range(50): world.think(False)
 
+def cheat_world_domination(world):
+    print("Taking over World")
+    amount = (8000 * len(world.cities))
+    world.player.give_random_crew_members(world, amount)
+    world.send_crew(amount)
+    world.gang_coffer = max(world.gang_coffer, 1000000000)
+
 def cheat_debug(world):
-    world.player.heat_cap = 2000
+    stats = world.stats
+    stats.refresh_stats(world)
+
+    for stat in stats.data["Business"].values():
+        print(stat.description, stat.count)
+    
+    input("\nPress enter to continue")
 
 
 
@@ -32,5 +45,6 @@ cheat_codes = {
     "ilose"             : cheat_ilose,
     "busted"            : cheat_busted,
     "timewarp"          : cheat_time_warp,
+    "world domination"  : cheat_world_domination,
     "debug"             : cheat_debug
 }

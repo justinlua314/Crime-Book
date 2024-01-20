@@ -110,6 +110,7 @@ class Bingo:
 
             self.bet = bet
             self.money -= bet
+            world.stats.max_stat("largest_bet", bet)
             self.reset()
 
             while self.turns_left > 0:
@@ -124,6 +125,7 @@ class Bingo:
                 if self.check_win():
                     shout = "Bingo!"
                     speed = (self.turns - self.turns_left)
+                    world.stats.min_stat("fast_bingo", self.turns)
 
                     if speed < 7:
                         shout += " You also earned a x"
@@ -138,6 +140,8 @@ class Bingo:
                     winnings = self.bet * 2
                     self.money += winnings
                     self.wins += 1
+                    world.stats.max_stat("biggest_win", winnings)
+                    world.stats.inc_stat("bingo_won")
 
                     print(f"\nYou won ${winnings}")
                     input_buffer()
@@ -150,6 +154,7 @@ class Bingo:
             if self.turns_left == 0:
                 print("\nUnlucky, no winnings for you")
                 self.loses += 1
+                world.stats.max_stat("biggest_loss", self.bet)
                 input_buffer()
 
         system("cls")

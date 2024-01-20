@@ -1,10 +1,12 @@
 from prettytable import PrettyTable
+from copy import deepcopy
 
 from random import randint as rand
 
 from events import EventLog
 from menu import input_buffer, valid_numeric_input
 from objects.warehouse import Item
+from objects.car_shop import CarShop
 from resources.loot_tables import generic_roll
 
 '''
@@ -17,6 +19,7 @@ Every Business must have the following methods
 class BusRecruitmentOffice:
     def __init__(self):
         self.name = "Recruitment Office"
+        self.description = "Recruits Crew Members without attracting heat from Police"
         self.count = 1
         self.crew_members = 0
         self.crew_cap = 100
@@ -42,6 +45,7 @@ class BusRecruitmentOffice:
 class BusGrowFarm:
     def __init__(self):
         self.name = "Grow Farm"
+        self.description = "Farms Grow Packs to sell"
         self.count = 1
         self.packs = 0
         self.pack_cap = 200
@@ -49,19 +53,34 @@ class BusGrowFarm:
         self.pack_ticker = 0
         self.min_harvest = 5
         self.max_harvest = 20
+        self.stat_id = "smoke_grown"
     
-    def think(self, _):
+    def think(self, world):
         self.pack_ticker += 1
 
         if self.pack_ticker == self.pack_time:
             self.pack_ticker = 0
+            new_packs = rand(
+                self.min_harvest * self.count,
+                self.max_harvest * self.count
+            )
+
+            total = self.packs + new_packs
+            space = self.pack_cap * self.count
+            subtract = 0
+
+            if total > space: subtract += (total - space)
+
+            new_packs -= subtract
+            self.packs += new_packs
+            world.stats.add_stat(self.stat_id, new_packs)
+
+            '''
             self.packs = min(
-                self.packs + rand(
-                    self.min_harvest * self.count,
-                    self.max_harvest * self.count
-                ),
+                self.packs + new_packs,
                 self.pack_cap * self.count
             )
+            '''
     
     def withdraw(self, world, log):
         if self.packs == 0: return log
@@ -87,11 +106,13 @@ class BusYayoFactory(BusGrowFarm):
     def __init__(self):
         super().__init__()
         self.name = "Yayo Factory"
+        self.description = "Cooks Yayo Packs to sell"
         self.count = 1
         self.pack_cap = 50
         self.pack_time = 10
         self.min_harvest = 1
         self.max_harvest = 3
+        self.stat_id = "yayo_made"
     
     def withdraw(self, world, log):
         if self.packs == 0: return log
@@ -113,6 +134,70 @@ class BusYayoFactory(BusGrowFarm):
 
     def holdings(self): return f"Yayo Packs: {self.packs}"
 
+class BusScrapyard(CarShop):
+    def __init__(self):
+        super().__init__()
+        self.name = "Scrap Yard"
+        self.description = "Sells poor quality cars before the Car Shop does"
+        self.count = 1
+        self.car_cap = 100
+        self.qualities = range(4)
+    
+    def think(self, world):
+        self.economy += (rand(100, 2000) * self.count)
+        if rand(1, 3) != 3: self.sell_items(world)
+
+        space = ((self.car_cap * self.count) - self.car_count())
+
+        if space > 0:
+            cs = world.car_shop
+            trash = []
+
+            for id, car_data in cs.cars.items():
+                for qual in self.qualities:
+                    if qual in car_data:
+                        car = car_data[qual]
+                        new = deepcopy(car)
+
+                        if car.count > space:
+                            cs.cars[id][qual].count -= space
+                            new.count = space
+                        else:
+                            cs.cars[id].pop(qual)
+                            if len(cs.cars[id]) == 0: trash.append(id)
+                        
+                        self.give_car(new)
+                        space -= new.count
+                    
+                    if space == 0: break
+                
+                if space == 0: break
+            
+            for id in trash: cs.cars.pop(id)
+
+    def withdraw(self, world, log):
+        if self.money == 0: return log
+        log.log("scrap_money", "Money collected from Scrap Yard", self.money)
+        world.player.money += self.money
+        self.money = 0
+        return log
+
+    def holdings(self): return f"Money: ${self.money}"
+
+class BusCarShowroom(BusScrapyard):
+    def __init__(self):
+        super().__init__()
+        self.name = "Car Showroom"
+        self.description = "Sells high quality cars before the Car Shop does"
+        self.qualities = range(4, 9)
+
+    def withdraw(self, world, log):
+        if self.money == 0: return log
+        log.log("show_money", "Money collected from Car Showroom", self.money)
+        world.player.money += self.money
+        self.money = 0
+        return log
+
 
 
 class BusinessManager:
@@ -121,6 +206,8 @@ class BusinessManager:
         self.location_limit = 0
         self.sell_rate = 0.6
         self.location_ids = { # id : (Business, price)
+            "scrapyard"     : (BusScrapyard, 10000),
+            "car_showroom"  : (BusCarShowroom, 25000),
             "recruitment"   : (BusRecruitmentOffice, 40000),
             "grow_farm"     : (BusGrowFarm, 75000),
             "yayo_factory"  : (BusYayoFactory, 150000)
@@ -184,14 +271,14 @@ class BusinessManager:
             return
 
         render = PrettyTable()
-        render.field_names = ["Key", "Business", "Price"]
-        render.add_row([0, "Cancel Selection", 0], divider=True)
+        render.field_names = ["Key", "Business", "Description", "Price"]
+        render.add_row([0, "Cancel Selection", '', 0], divider=True)
         key = 1
 
         for id, data in self.location_ids.items():
             example = data[0]()
             render.add_row(
-                [key, example.name, self.price(id)], divider=True
+                [key, example.name, example.description, self.price(id)], divider=True
             )
             key += 1
         
@@ -251,6 +338,7 @@ class BusinessManager:
             render.add_row([
                 key, busy.name, value, busy.count, (value * busy.count)
             ], divider=True)
+            key += 1
         
         print(render)
 

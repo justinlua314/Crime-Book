@@ -25,6 +25,8 @@ def rob_pedestrian(world):
         target = (Cop(world) if rand(1, 20) == 10 else Ped(world, True))
         member.fight(target, world, log)
 
+        if member.alive(): world.stats.inc_stat("peds_robbed")
+
     log.print_events()
     input_buffer()
 
@@ -55,6 +57,7 @@ def car_jacking(world):
                 id = (car.id + "_stolen")
                 log.log(id, car.name + " Stolen")
                 give(roll_random_car())
+                world.stats.inc_stat("cars_jacked")
                 world.player.heat += (2 * rand(0, 1))
 
     log.print_events()
@@ -95,7 +98,9 @@ def house_robbery(world):
 
                     if not member.alive(): break
             
-            if member.alive(): give(item)
+            if member.alive():
+                give(item)
+                world.stats.inc_stat("houses_robbed")
             else:
                 if i == 3: ply.heat += 10
                 elif i == 4: ply.heat += 25
@@ -205,7 +210,9 @@ def hack_police(world):
     discovered = game.play()
 
     if discovered: ply.heat *= rand(2, 4)
-    else: ply.heat = int(ply.heat * 0.4)
+    else:
+        ply.heat = int(ply.heat * 0.4)
+        world.stats.inc_stat("computers_hacked")
 
 
 menu_crime = Menu(

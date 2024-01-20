@@ -40,6 +40,7 @@ class Bank:
 
         self.savings += deposit
         ply.money -= deposit
+        world.stats.max_stat("savings_high", self.savings)
 
         print(f"Deposited ${deposit} into savings")
         limit_changed = False
@@ -113,6 +114,7 @@ class Bank:
         
         ply = world.player
         max_loan = (ply.money + self.savings) * int(sqrt(len(ply.crew)))
+        max_loan = min(max_loan, 25000000)
         print(f"It looks like you are elligable for a ${max_loan} loan")
 
         amount = valid_numeric_input(
@@ -124,6 +126,7 @@ class Bank:
         self.original_loan = amount
         self.loan = amount
         ply.money += amount
+        world.stats.max_stat("largest_loan", amount)
 
         print(f"\nYou are now locked into a ${amount} loan with a {self.interest_rate}% interest every {self.interest_cooldown} turns")
         input_buffer()
@@ -249,8 +252,7 @@ class Bank:
         if self.dividend_ticker == self.dividend_cooldown:
             self.dividend_ticker = 0
             dividend = int((sum(self.savings_history) // self.dividend_cooldown) * (self.save_interest / 100))
-            #self.savings += dividend
-            self.savings = min(self.savings + dividend, 20000000)
+            self.savings += min(dividend, 20000000)
             self.savings_history = []
 
             if self.auto_withdraw > 0:
