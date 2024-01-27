@@ -19,7 +19,7 @@ def cheat_time_warp(world):
 
 def cheat_world_domination(world):
     print("Taking over World")
-    amount = (8000 * len(world.cities))
+    amount = (9000 * len(world.cities))
     world.player.give_random_crew_members(world, amount)
     world.send_crew(amount)
     world.gang_coffer = max(world.gang_coffer, 1000000000)

@@ -119,7 +119,7 @@ class Menu:
 
             if world.bank.loan > 0: print(f"Loan: ${world.bank.loan}")
 
-            choice = input("\n\n" + self.choice_prompt + ": ")
+            choice = input("\n\n" + self.choice_prompt + ": ").lower()
             system("cls")
 
             if ' ' in choice:
@@ -153,6 +153,8 @@ class Menu:
                 world.cheated = True
                 choice = None
                 return
+
+            flush_input()
         
         for option in self.options:
             if option.select == choice:

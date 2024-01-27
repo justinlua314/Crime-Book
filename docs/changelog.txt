@@ -1,3 +1,21 @@
+Version 0.4
+
+Added Main Menu before jumping into the game
+
+Added ability to save and load game
+    Save files stored in a "saves" folder in the same directory as Crime Book
+
+Added Tutorial to explain Menu navigation
+
+
+Fixed oversight where Cities always cost $0
+
+
+
+
+
+
+
 Version 0.3
 
 Added new Businesses
@@ -14,6 +32,9 @@ Fixed glitch where savings account was silently capped at $20000000
 Fixed Players gang name not appearing properly in territory menu
 Input buffer gets cleared in between turns to prevent flashing screen when game is laggy + use of macros + holding enter
 Large performance optimizations
+
+Added Statistics that are tracked during gameplay
+    Statistics can be exported as a txt file
 
 
 

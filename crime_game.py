@@ -1,9 +1,12 @@
 from os import system
+from prettytable import PrettyTable
 
 from objects.world import World
-from menu import MenuManager, input_buffer
+from objects.tutorial import Tutorial
+from menu import MenuManager, input_buffer, flush_input
 
 from menus.home import menu_home
+from menus.save import load_game
 
 import menus.crime as Crime
 import menus.territory as Territory
@@ -12,14 +15,14 @@ import menus.wh as Warehouse
 import menus.crew as Crew
 import menus.recruit as Recruit
 import menus.busy as Business
+import menus.save as Save
 
 class CrimeGame:
     def __init__(self):
-        self.gang_name = "My Crew"
         self.world = World()
         # Menus cannot be accessed until they are registered here
         self.menu_manager = MenuManager("menu_home", {
-            "menu_home" : menu_home,
+            "menu_home"             : menu_home,
             "menu_crime"            : Crime.menu_crime,
             "menu_crime_petty"      : Crime.menu_crime_petty,
             "menu_heist"            : Crime.menu_heist,
@@ -36,7 +39,8 @@ class CrimeGame:
             "menu_crew"             : Crew.menu_crew,
             "menu_stats"            : Crew.menu_stats,
             "menu_recruit"          : Recruit.menu_recruit,
-            "menu_business"         : Business.menu_business
+            "menu_business"         : Business.menu_business,
+            "menu_save"             : Save.menu_save
         },
         
         {   # Macros to navigate menus faster
@@ -98,7 +102,9 @@ class CrimeGame:
             "bw"  : Business.busy_withdraw,
             "bi"  : Business.busy_inspect,
             "bp"  : Business.busy_purchase,
-            "bs"  : Business.busy_sell
+            "bs"  : Business.busy_sell,
+            "ms"  : Save.save_game,
+            "ml"  : Save.load_game
         })
 
     def lose(self):
@@ -140,16 +146,62 @@ class CrimeGame:
         
         return name
 
+    # Returns True if new game
+    def main_menu(self):
+        render = PrettyTable()
+        render.field_names = ["Key", "Option"]
+        render.add_row(['n', "New Game"], divider=True)
+        render.add_row(['l', "Load Game"], divider=True)
+        render.add_row(['q', "Quit Game"], divider=True)
+
+        choice = '?'
+
+        while choice not in ('n', 'l', 'q'):
+            system("cls")
+            print(render)
+            choice = input("\nChoose your path: ")
+        
+        if choice == 'n': return True
+        elif choice == 'l':
+            system("cls")
+            success = load_game(self.world)
+
+            if success: return False
+            else: self.main_menu()
+        else:
+            system("cls")
+            print("Thank you for playing Crime Book")
+            exit()
+    
+    def offer_tutorial(self):
+        answer = None
+
+        while answer not in ('y', 'n'):
+            system("cls")
+            print("Would you like to play the tutorial?")
+            answer = input("\ny or n: ").lower()
+        
+        if answer == 'y':
+            tutorial = Tutorial()
+            tutorial.play()
+
+
+
     # Main game loop
     def play(self):
-        self.world.player_gang_name = ("The " + self.get_gang_name())
+        new = self.main_menu()
 
-        for city in self.world.cities.values():
-            for block in city.blocks:
-                for gang in block.gangs:
-                    if not gang.ai:
-                        gang.name = self.world.player_gang_name
-                        break
+        if new:
+            self.offer_tutorial()
+            flush_input()
+            self.world.player_gang_name = ("The " + self.get_gang_name())
+
+            for city in self.world.cities.values():
+                for block in city.blocks:
+                    for gang in block.gangs:
+                        if not gang.ai:
+                            gang.name = self.world.player_gang_name
+                            break
 
         playing = True
 

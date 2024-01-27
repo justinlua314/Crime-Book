@@ -238,7 +238,7 @@ class CrewMember(Human):
             kill_desc = ("Crew killed by " + target.type)
             log.log(kill_id, kill_desc)
             world.stats.inc_stat("crew_died")
-            if player: ply.crew.pop(id(self))
+            if player and id(self) in ply.crew: ply.crew.pop(id(self))
 
     def recruit(self, target, world, log):
         ply = world.player

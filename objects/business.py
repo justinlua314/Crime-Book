@@ -20,7 +20,7 @@ class BusRecruitmentOffice:
     def __init__(self):
         self.name = "Recruitment Office"
         self.description = "Recruits Crew Members without attracting heat from Police"
-        self.count = 1
+        self.count = 0
         self.crew_members = 0
         self.crew_cap = 100
         self.crew_rate = (1, 3)
@@ -45,8 +45,8 @@ class BusRecruitmentOffice:
 class BusGrowFarm:
     def __init__(self):
         self.name = "Grow Farm"
-        self.description = "Farms Grow Packs to sell"
-        self.count = 1
+        self.description = "Grows Smoke Packs to sell"
+        self.count = 0
         self.packs = 0
         self.pack_cap = 200
         self.pack_time = 20
@@ -74,13 +74,6 @@ class BusGrowFarm:
             new_packs -= subtract
             self.packs += new_packs
             world.stats.add_stat(self.stat_id, new_packs)
-
-            '''
-            self.packs = min(
-                self.packs + new_packs,
-                self.pack_cap * self.count
-            )
-            '''
     
     def withdraw(self, world, log):
         if self.packs == 0: return log
@@ -107,7 +100,7 @@ class BusYayoFactory(BusGrowFarm):
         super().__init__()
         self.name = "Yayo Factory"
         self.description = "Cooks Yayo Packs to sell"
-        self.count = 1
+        self.count = 0
         self.pack_cap = 50
         self.pack_time = 10
         self.min_harvest = 1
@@ -139,7 +132,7 @@ class BusScrapyard(CarShop):
         super().__init__()
         self.name = "Scrap Yard"
         self.description = "Sells poor quality cars before the Car Shop does"
-        self.count = 1
+        self.count = 0
         self.car_cap = 100
         self.qualities = range(4)
     

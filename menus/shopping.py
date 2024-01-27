@@ -185,11 +185,13 @@ def new_city(world):
     if ply.money < cost:
         print(f"We need at least ${cost} to build another City")
     else:
+        print(f"Money: ${ply.money}")
         print(f"\nBuilding a new City will cost ${cost}")
         print("We need a name for it. Hit enter with no name to cancel")
         name = input("\nWhat will be the name of our new city: ")
 
         world.add_city(name)
+        ply.money -= world.city_cost
         world.city_cost *= 2
         world.stats.inc_stat("cities_purchased")
 
@@ -231,7 +233,7 @@ def casino_game(world, game_obj):
     game = game_obj(pot)
     after_pot = game.play(world)
     ply.money += after_pot
-    world.stats.add_stat("winnings", max(after_pot - pot, 0))
+    world.stats.add_stat("winnings", after_pot - pot)
 
     leave_casino()
 

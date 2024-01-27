@@ -252,6 +252,7 @@ class StatCounter:
     def set_stat(self, id, value): self.lookup_stat(id).count = value
     def add_stat(self, id, value): self.lookup_stat(id).count += value
     def inc_stat(self, id): self.lookup_stat(id).count += 1
+    def sub_stat(self, id, value): self.lookup_stat(id).count -= value
 
     def min_stat(self, id, value):
         target = self.lookup_stat(id)

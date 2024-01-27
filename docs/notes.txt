@@ -7,11 +7,8 @@ Adding Menu option
 
 TODO
 
-Add game saving by 0.7
+Add x4 reward on a double down win in Blackjack
 
-Add tutorial by 0.8
+Make Blocks easier to control. Shouldn't take thousands of people
 
-
-
-Achievements?
-
+Achievements

@@ -125,7 +125,7 @@ class Bingo:
                 if self.check_win():
                     shout = "Bingo!"
                     speed = (self.turns - self.turns_left)
-                    world.stats.min_stat("fast_bingo", self.turns)
+                    world.stats.min_stat("fast_bingo", speed)
 
                     if speed < 7:
                         shout += " You also earned a x"
